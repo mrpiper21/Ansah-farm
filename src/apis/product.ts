@@ -16,3 +16,4 @@ export const getProductDetails = async (productId: string): Promise<Product> => 
     throw error;
   }
 };
+

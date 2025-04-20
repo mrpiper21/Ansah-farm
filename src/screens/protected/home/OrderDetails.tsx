@@ -57,54 +57,61 @@ const ProductDetailsScreen = ({ route }: ProductDetailsProps) => {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {product.imageUrl && (
-        <Image source={{ uri: product.imageUrl }} style={styles.productImage} resizeMode="cover" />
-      )}
-      
-      <View style={styles.detailsContainer}>
-        <Text style={styles.productName}>{product.name}</Text>
-        
-        <View style={styles.priceContainer}>
-          <Text style={styles.price}>${product.price.toFixed(2)}</Text>
-          <Text style={styles.quantity}>{product.quantity}</Text>
-        </View>
-        
-        {product.category && (
-          <View style={styles.categoryContainer}>
-            <Text style={styles.categoryLabel}>Category:</Text>
-            <Text style={styles.category}>{product.category}</Text>
-          </View>
-        )}
-        
-        {product.description && (
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.descriptionLabel}>Description:</Text>
-            <Text style={styles.description}>{product.description}</Text>
-          </View>
-        )}
-        
-        <View style={styles.farmerContainer}>
-          <Text style={styles.farmerLabel}>Sold by:</Text>
-          <View style={styles.farmerInfo}>
-            {product.farmer.avatar && (
-              <Image source={{ uri: product.farmer.avatar }} style={styles.avatar} />
-            )}
-            <View style={styles.farmerText}>
-              <Text style={styles.farmerName}>{product.farmer.userName}</Text>
-              <Text style={styles.farmerEmail}>{product.farmer.email}</Text>
-            </View>
-          </View>
-        </View>
-        <Button style={{borderRadius: 30, marginTop: responsive.Dw(60)}}>
-        <Text>
-          Purchase
-        </Text>
-      </Button>
-      </View>
-      
-    </ScrollView>
-  );
+		<ScrollView
+			style={styles.container}
+			contentContainerStyle={styles.contentContainer}
+		>
+			{product.imageUrl && (
+				<Image
+					source={{ uri: product.imageUrl }}
+					style={styles.productImage}
+					resizeMode="cover"
+				/>
+			)}
+
+			<View style={styles.detailsContainer}>
+				<Text style={styles.productName}>{product.name}</Text>
+
+				<View style={styles.priceContainer}>
+					<Text style={styles.price}>GHS{product.price.toFixed(2)}</Text>
+					<Text style={styles.quantity}>{product.quantity}</Text>
+				</View>
+
+				{product.category && (
+					<View style={styles.categoryContainer}>
+						<Text style={styles.categoryLabel}>Category:</Text>
+						<Text style={styles.category}>{product.category}</Text>
+					</View>
+				)}
+
+				{product.description && (
+					<View style={styles.descriptionContainer}>
+						<Text style={styles.descriptionLabel}>Description:</Text>
+						<Text style={styles.description}>{product.description}</Text>
+					</View>
+				)}
+
+				<View style={styles.farmerContainer}>
+					<Text style={styles.farmerLabel}>Sold by:</Text>
+					<View style={styles.farmerInfo}>
+						{product.farmer.avatar && (
+							<Image
+								source={{ uri: product.farmer.avatar }}
+								style={styles.avatar}
+							/>
+						)}
+						<View style={styles.farmerText}>
+							<Text style={styles.farmerName}>{product.farmer.userName}</Text>
+							<Text style={styles.farmerEmail}>{product.farmer.email}</Text>
+						</View>
+					</View>
+				</View>
+				<Button style={{ borderRadius: 30, marginTop: responsive.Dw(60) }}>
+					<Text>Purchase GHS{product.price}.00</Text>
+				</Button>
+			</View>
+		</ScrollView>
+	);
 };
 
 const styles = StyleSheet.create({

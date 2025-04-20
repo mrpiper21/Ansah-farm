@@ -17,6 +17,7 @@ import WeatherWidget from "../../../components/weather/weather-widget";
 import { Colors } from "../../../constants/Colors";
 import WeatherAdvisory from "../../../components/weather/weather-advisory";
 import useAuthStore from "../../../store/auth-store";
+import ClientHomePage from "./client/ClientHomePage";
 
 // Sample farming tips data
 const farmingTips = [
@@ -51,145 +52,142 @@ export default function FarmerDashboard() {
         // Here you would typically send the data to your backend
     };
 
-    if (user?.type !== "farmer") {
-        return (
-            <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-                <Text style={styles.accessDeniedText}>
-                    Access Denied. This dashboard is for farmers only.
-                </Text>
-            </View>
-        );
-    }
+    if (user?.type === "client") {
+			return (
+				<ClientHomePage />
+			);
+		}
 
-    useEffect(() => {
-        const fetchProduct = async () => {
-            const response = await axios.get(
-                `${baseUrl}/api/products/farmer/${user?.id}`
-            );
+		useEffect(() => {
+			const fetchProduct = async () => {
+				const response = await axios.get(
+					`${baseUrl}/api/products/farmer/${user?.id}`
+				);
 
-            if (response.data.data) {
-                console.log(response?.data?.data);
-                setProduceCount(response?.data?.data?.length);
-            }
-        };
-        fetchProduct();
-    }, []);
+				if (response.data.data) {
+					console.log(response?.data?.data);
+					setProduceCount(response?.data?.data?.length);
+				}
+			};
+			fetchProduct();
+		}, []);
 
-    return (
-        <View style={{ flex: 1, position: "relative" }}>
-            <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-                {/* Weather Section */}
-                <WeatherWidget location={user.location} />
+		return (
+			<View style={{ flex: 1, position: "relative" }}>
+				<ScrollView
+					showsVerticalScrollIndicator={false}
+					style={styles.container}
+				>
+					{/* Weather Section */}
+					<WeatherWidget location={user?.location} />
 
-                {/* Stats Grid */}
-                <View style={styles.statsGrid}>
-                    {/* <TouchableOpacity style={[styles.statCard, styles.statCardPrimary]}>
+					{/* Stats Grid */}
+					<View style={styles.statsGrid}>
+						{/* <TouchableOpacity style={[styles.statCard, styles.statCardPrimary]}>
                         <MaterialIcons name="grass" size={28} color="white" />
                         <Text style={styles.statNumber}>5</Text>
                         <Text style={styles.statLabel}>Active Crops</Text>
                     </TouchableOpacity> */}
-                    <TouchableOpacity
-                        // onPress={() => {
-                        //     navigation.navigate('dynamicNavigator', { 
-                        //         screen: 'listing',
-                        //         params: { id: product._id }
-                        //       });
-                        // }}
-                        
-                        style={[styles.statCard, styles.statCardSecondary]}
-                    >
-                        <Feather name="check-circle" size={28} color="white" />
-                        <Text style={styles.statNumber}>0</Text>
-                        <Text style={styles.statLabel}>Orders</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                       onPress={()=> {
-                            navigation.navigate('dynamicNavigator', { 
-                                screen: 'farmer-produce',
-                              });
-                        }}
-                       
-                        style={[styles.statCard, { backgroundColor: Colors.light.text }]}
-                    >
-                        <FontAwesome name="leaf" size={28} color="white" />
-                        <Text style={styles.statNumber}>{produceCount}</Text>
-                        <Text style={styles.statLabel}>Produce</Text>
-                    </TouchableOpacity>
-                </View>
+						<TouchableOpacity
+							onPress={() => {
+								navigation.navigate("dynamicNavigator", {
+									screen: "farmer-orders",
+									// params: { id: product._id }
+								});
+							}}
+							style={[styles.statCard, styles.statCardSecondary]}
+						>
+							<Feather name="check-circle" size={28} color="white" />
+							<Text style={styles.statNumber}>0</Text>
+							<Text style={styles.statLabel}>Orders</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={() => {
+								navigation.navigate("dynamicNavigator", {
+									screen: "farmer-produce",
+								});
+							}}
+							style={[styles.statCard, { backgroundColor: Colors.light.text }]}
+						>
+							<FontAwesome name="leaf" size={28} color="white" />
+							<Text style={styles.statNumber}>{produceCount}</Text>
+							<Text style={styles.statLabel}>Produce</Text>
+						</TouchableOpacity>
+					</View>
 
-                {/* Farming Tips */}
-                <View style={styles.section}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Latest Guidance</Text>
-                        <TouchableOpacity
-                            // onPress={() => router.push("/(tabs)/explore")}
-                            style={styles.seeAllButton}
-                        >
-                            <Text style={styles.seeAllText}>View All</Text>
-                            <Feather
-                                name="arrow-right"
-                                size={16}
-                                color={Colors.light.primary}
-                            />
-                        </TouchableOpacity>
-                    </View>
+					{/* Farming Tips */}
+					<View style={styles.section}>
+						<View style={styles.sectionHeader}>
+							<Text style={styles.sectionTitle}>Latest Guidance</Text>
+							<TouchableOpacity
+								// onPress={() => router.push("/(tabs)/explore")}
+								style={styles.seeAllButton}
+							>
+								<Text style={styles.seeAllText}>View All</Text>
+								<Feather
+									name="arrow-right"
+									size={16}
+									color={Colors.light.primary}
+								/>
+							</TouchableOpacity>
+						</View>
 
-                    {farmingTips.map((tip) => (
-                        <TouchableOpacity key={tip.id} style={styles.tipCard}>
-                            <LinearGradient
-                                colors={["#FFFFFF", "#F8F8F8"]}
-                                style={styles.tipGradient}
-                            >
-                                <View style={styles.tipContent}>
-                                    <View style={styles.tipHeader}>
-                                        <Text style={styles.tipCategory}>{tip.category}</Text>
-                                        <View
-                                            style={[
-                                                styles.categoryIndicator,
-                                                { backgroundColor: Colors.light.secondary + "20" },
-                                            ]}
-                                        >
-                                            <Feather
-                                                name="book-open"
-                                                size={16}
-                                                color={Colors.light.secondary}
-                                            />
-                                        </View>
-                                    </View>
-                                    <Text style={styles.tipTitle}>{tip.title}</Text>
-                                    <Text style={styles.tipDescription}>{tip.description}</Text>
-                                </View>
-                                <TouchableOpacity style={styles.tipButton}>
-                                    <Feather
-                                        name="chevron-right"
-                                        size={24}
-                                        color={Colors.light.text}
-                                    />
-                                </TouchableOpacity>
-                            </LinearGradient>
-                        </TouchableOpacity>
-                    ))}
-                </View>
+						{farmingTips.map((tip) => (
+							<TouchableOpacity key={tip.id} style={styles.tipCard}>
+								<LinearGradient
+									colors={["#FFFFFF", "#F8F8F8"]}
+									style={styles.tipGradient}
+								>
+									<View style={styles.tipContent}>
+										<View style={styles.tipHeader}>
+											<Text style={styles.tipCategory}>{tip.category}</Text>
+											<View
+												style={[
+													styles.categoryIndicator,
+													{ backgroundColor: Colors.light.secondary + "20" },
+												]}
+											>
+												<Feather
+													name="book-open"
+													size={16}
+													color={Colors.light.secondary}
+												/>
+											</View>
+										</View>
+										<Text style={styles.tipTitle}>{tip.title}</Text>
+										<Text style={styles.tipDescription}>{tip.description}</Text>
+									</View>
+									<TouchableOpacity style={styles.tipButton}>
+										<Feather
+											name="chevron-right"
+											size={24}
+											color={Colors.light.text}
+										/>
+									</TouchableOpacity>
+								</LinearGradient>
+							</TouchableOpacity>
+						))}
+					</View>
 
-                <WeatherAdvisory />
-            </ScrollView>
-            <TouchableOpacity
-            onPress={()=> {
-                navigation.navigate('dynamicNavigator', { 
-                    screen: 'sell',
-                  });
-            }}
-                style={styles.sellButtonContainer}
-            >
-                <MaterialIcons
-                    name="add-circle"
-                    size={60}
-                    color={Colors.light.primary}
-                />
-                <Text>Sell</Text>
-            </TouchableOpacity>
-        </View>
-    );
+					<WeatherAdvisory />
+				</ScrollView>
+				<TouchableOpacity
+					onPress={() => {
+						navigation.navigate("dynamicNavigator", {
+							screen: "sell",
+						});
+					}}
+					style={styles.sellButtonContainer}
+				>
+					<MaterialIcons
+						name="add-circle"
+						size={60}
+						color={Colors.light.primary}
+					/>
+					<Text>Sell</Text>
+				</TouchableOpacity>
+			</View>
+		);
 }
 
 const styles = StyleSheet.create({

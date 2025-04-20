@@ -1,22 +1,33 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { FC } from "react";
+import {
+	ActivityIndicator,
+	Alert,
+	Image,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
+} from "react-native";
+import React, { FC, useState } from "react";
 import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
 import Button from "../buttons/basic-button";
 import { IconSymbol } from "../ui/IconSymbol";
 import { useNavigation } from "@react-navigation/native";
 import { Product } from "../../screens/protected/market";
 import { Colors } from "../../constants/Colors";
-import { DynamicStackScreenProps } from "../../navigation/DynamicNavigator";
+import useCartStore from "../../store/cart-store";
+import useAuthStore from "../../store/auth-store";
+import axios from "axios";
+import { baseUrl } from "../../config/api";
 
 interface Props {
 	product: Product;
 }
 
-const ProducetCard: FC<Props> = ({ product }) => {
+const ProductCard: FC<Props> = ({ product }) => {
 	const navigation = useNavigation() as any;
-	const toggleFavorite = (productId: string) => {
-		console.log(`Toggling favorite for product ${productId}`);
-	};
+	const { user } = useAuthStore((state) => state);
+	const { addToCart } = useCartStore();
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const getCategoryColor = (category: string) => {
 		switch (category.toLowerCase()) {
@@ -31,6 +42,66 @@ const ProducetCard: FC<Props> = ({ product }) => {
 			default:
 				return Colors.light.secondary;
 		}
+	};
+
+	const handlePurchase = async () => {
+		const payload = {
+			buyer: user?.id,
+			items: [
+				{
+					product: product._id,
+					quantity: 1,
+				},
+			],
+		};
+		console.log("payload --------------", payload);
+		Alert.alert(
+			"Confirm Purchase",
+			`Are you sure you want to buy ${
+				product.name
+			} for GHS${product.price.toFixed(2)}?`,
+			[
+				{
+					text: "Cancel",
+					style: "cancel",
+				},
+				{
+					text: "Confirm",
+					onPress: async () => {
+						try {
+							setIsLoading(true);
+
+							const response = await axios.post(
+								`${baseUrl}/api/orders/create`,
+								payload
+							);
+
+							if (response.status === 201) {
+								navigation.navigate("OrderConfirmation", {
+									orderId: response?.data?.data.order?._id,
+									productName: product.name,
+									price: product.price,
+									farmerName: product.farmer.userName,
+								});
+							} else {
+								Alert.alert(
+									"Error",
+									response?.data?.error || "Failed to create order"
+								);
+							}
+						} catch (error: any) {
+							Alert.alert(
+								"Error",
+								error.response?.data?.message || "Failed to connect to server"
+							);
+						} finally {
+							setIsLoading(false);
+						}
+					},
+				},
+			],
+			{ cancelable: true }
+		);
 	};
 
 	return (
@@ -57,27 +128,28 @@ const ProducetCard: FC<Props> = ({ product }) => {
 			{/* Product Image */}
 			<TouchableOpacity
 				onPress={() =>
-					// router.push({
-					// 	pathname: "/(dynamic)/[orderDetails]",
-					// 	params: { orderDetails: product._id },
-					// })
-					//TODO
-					navigation.navigate('dynamicNavigator', { 
-						screen: 'order-details',
-						params: { id: product._id }
-					  })
+					navigation.navigate("dynamicNavigator", {
+						screen: "order-details",
+						params: { id: product._id },
+					})
 				}
-				style={{flexDirection: 'row', gap: 10, alignItems: 'center'}}
+				style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
 			>
 				<Image source={{ uri: product.imageUrl }} style={styles.productImage} />
 
 				{/* Product Details */}
-				<View style={{ justifyContent: "space-between", display: 'flex', position: 'relative' }}>
+				<View
+					style={{
+						justifyContent: "space-between",
+						display: "flex",
+						position: "relative",
+					}}
+				>
 					<View style={styles.detailsContainer}>
 						<Text style={styles.productName}>{product.name}</Text>
 
 						<View style={styles.priceContainer}>
-							<Text style={styles.price}>${product.price.toFixed(2)}</Text>
+							<Text style={styles.price}>GHS{product.price.toFixed(2)}</Text>
 							<Text style={styles.quantity}> / {product.quantity}</Text>
 						</View>
 
@@ -85,7 +157,14 @@ const ProducetCard: FC<Props> = ({ product }) => {
 							{new Date(product.createdAt).toLocaleDateString()}
 						</Text>
 					</View>
-					<View style={{ alignItems: "center", flexDirection: 'row', justifyContent: 'flex-end', width: "80%" }}>
+					<View
+						style={{
+							alignItems: "center",
+							flexDirection: "row",
+							justifyContent: "flex-end",
+							width: "80%",
+						}}
+					>
 						<IconSymbol name="star.fill" color={"orange"} />
 						<Text>4.7</Text>
 						<Text>Ratings</Text>
@@ -97,17 +176,33 @@ const ProducetCard: FC<Props> = ({ product }) => {
 			<View style={styles.actionsContainer}>
 				<TouchableOpacity
 					style={styles.favoriteButton}
-					onPress={() => toggleFavorite(product._id)}
+					onPress={() => addToCart(product)}
 				>
 					<Ionicons
-						name={"heart-outline"}
+						name={"add-circle-outline"}
 						size={34}
-						color={Colors.light.text}
+						color={Colors.light.primary}
 					/>
 				</TouchableOpacity>
-
-				<Button size="md" style={{ width: "80%", borderRadius: 30 }}>
-					<Text>Purchase</Text>
+				<Button
+					onPress={handlePurchase}
+					disabled={isLoading || Number(product?.quantity) === 0}
+					size="md"
+					style={{
+						width: "80%",
+						borderRadius: 30,
+						opacity: isLoading ? 0.7 : 1,
+						backgroundColor:
+							Number(product?.quantity) === 0 ? "grey" : Colors.light.primary,
+					}}
+				>
+					{isLoading ? (
+						<ActivityIndicator color={Colors.light.surface} />
+					) : Number(product?.quantity) === 0 ? (
+						<Text>Out Of Stock</Text>
+					) : (
+						<Text style={{ color: Colors.light.surface }}>Purchase</Text>
+					)}
 				</Button>
 			</View>
 			<View
@@ -134,8 +229,6 @@ const ProducetCard: FC<Props> = ({ product }) => {
 	);
 };
 
-export default ProducetCard;
-
 const styles = StyleSheet.create({
 	card: {
 		backgroundColor: Colors.light.surface,
@@ -144,7 +237,7 @@ const styles = StyleSheet.create({
 		marginBottom: 16,
 		position: "relative",
 		borderWidth: 0.5,
-		borderColor: 'gray'
+		borderColor: "gray",
 	},
 	badge: {
 		position: "absolute",
@@ -206,3 +299,5 @@ const styles = StyleSheet.create({
 		padding: 8,
 	},
 });
+
+export default ProductCard;
