@@ -79,9 +79,9 @@ const ProductCard: FC<Props> = ({ product }) => {
 							if (response.status === 201) {
 								navigation.navigate("OrderConfirmation", {
 									orderId: response?.data?.data.order?._id,
-									productName: product.name,
+									productName: product?.name,
 									price: product.price,
-									farmerName: product.farmer.userName,
+									farmerName: product?.farmer?.userName,
 								});
 							} else {
 								Alert.alert(
@@ -223,7 +223,7 @@ const ProductCard: FC<Props> = ({ product }) => {
 				>
 					<SimpleLineIcons name="user" size={30} color="grey" />
 				</View>
-				<Text style={{ marginTop: 10 }}>{product.farmer.userName}</Text>
+				<Text style={{ marginTop: 10 }}>{product?.farmer?.userName}</Text>
 			</View>
 		</View>
 	);

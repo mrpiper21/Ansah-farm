@@ -101,44 +101,6 @@ export default function TabsNavigator() {
 					}}
 				/>
 			)}
-
-			{user?.type === "client" && (
-				<Tab.Screen
-					name="Market"
-					component={MarketPlace}
-					options={{
-						tabBarIcon: ({ color, focused }) => (
-							<IconSymbol
-								size={28}
-								name={focused ? "seal.fill" : "seal"}
-								color={color}
-							/>
-						),
-						headerShown: true,
-						header: () => (
-							<View style={styles.exploreHeader}>
-								<Text style={styles.headerTitle}>Market</Text>
-								<View style={styles.searchContainer}>
-									<View style={styles.searchBox}>
-										<MaterialIcons
-											name="search"
-											size={20}
-											color={Colors.light.text}
-										/>
-										<TextInput
-											style={styles.searchText}
-											placeholder="Search food..."
-											placeholderTextColor={Colors.light.text}
-											value={searchQuery}
-											onChangeText={setSearchQuery}
-										/>
-									</View>
-								</View>
-							</View>
-						),
-					}}
-				/>
-			)}
 			{user?.type === "client" && (
 				<Tab.Screen
 					name="Cart"
