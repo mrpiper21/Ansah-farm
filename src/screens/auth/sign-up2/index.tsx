@@ -3,42 +3,36 @@ import {
 	View,
 	Text,
 	Image,
-	Pressable,
 	StyleSheet,
 	Keyboard,
 	TouchableWithoutFeedback,
 	KeyboardTypeOptions,
-	ActivityIndicator,
 	useColorScheme,
+	Alert,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import BottomSheet, {
 	BottomSheetView,
-	BottomSheetBackdrop,
 	useBottomSheetSpringConfigs,
 } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-
-import { useToast } from "react-native-toast-notifications";
-import { Colors } from '../../../constants/Colors';
-import useAuthStore, { IUser } from '../../../store/auth-store';
-import { useForm } from '../../../store/form-store';
-import FormTextInput from '../../../components/input-elements/form-text-input';
-import Button from '../../../components/buttons/basic-button';
-import responsive from '../../../helpers/responsive';
-import GoogleIcon from '../../../../assets/icons/GOOGLE';
+import { Colors } from "../../../constants/Colors";
+import useAuthStore, { IUser } from "../../../store/auth-store";
+import { useForm } from "../../../store/form-store";
+import FormTextInput from "../../../components/input-elements/form-text-input";
+import Button from "../../../components/buttons/basic-button";
+import responsive from "../../../helpers/responsive";
+import GoogleIcon from "../../../../assets/icons/GOOGLE";
 
 export default function SignUpScreen2() {
 	const colorScheme = useColorScheme();
 	const colors = Colors[colorScheme ?? "light"];
-	const [isFarmer, setIsFarmer] = useState(false);
 	const bottomSheetRef = useRef<BottomSheet>(null);
 	const [createFucntionIsCalled, setCreateFuctionIsCalled] =
 		useState<boolean>(false);
 	const snapPoints = ["60%", "75%"];
 	const { setFormValues, formValues, clearFormValues } = useForm();
-	const { register, isLoading, error } = useAuthStore();
-	const toast = useToast();
+	const { register, isLoading } = useAuthStore();
 
 	const animationConfigs = useBottomSheetSpringConfigs({
 		damping: 80,
@@ -70,10 +64,7 @@ export default function SignUpScreen2() {
 
 			// Early validation
 			if (formValues.password !== formValues.confirm_password) {
-				toast.show("Passwords do not match", {
-					type: "danger",
-					animationType: "zoom-in",
-				});
+				Alert.alert("Passwords do not match");
 				return;
 			}
 
@@ -86,18 +77,10 @@ export default function SignUpScreen2() {
 			await register(payload, formValues.confirm_password);
 
 			// Handle success
-			toast.show("Registration successful", {
-				type: "success",
-				animationType: "zoom-in",
-			});
+			Alert.alert("Registration successful");
 			clearFormValues();
-			//TODO
-			// router.push("/(tabs)");
 		} catch (error: any) {
-			toast.show(error?.message || "Registration failed", {
-				type: "danger",
-				animationType: "zoom-in",
-			});
+			Alert.alert(error?.message || "Registration failed");
 		} finally {
 			setCreateFuctionIsCalled(false);
 		}

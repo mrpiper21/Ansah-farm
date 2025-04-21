@@ -178,7 +178,6 @@ const useAuthStore = create(
 			logout: async () => {
 				try {
 					set({ isLoading: true, error: null });
-					// await signOut(auth);
 					set({ user: null, isAuthenticated: false, isLoading: false });
 				} catch (error: any) {
 					set({ error: error.message || "Logout failed", isLoading: false });

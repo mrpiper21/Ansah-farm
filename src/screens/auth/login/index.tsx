@@ -1,22 +1,22 @@
 import { useState, useRef, useCallback } from "react";
 import {
-  View,
-  Text,
-  Image,
-  Pressable,
-  StyleSheet,
-  Keyboard,
-  TouchableWithoutFeedback,
-  useColorScheme,
+	View,
+	Text,
+	Image,
+	Pressable,
+	StyleSheet,
+	Keyboard,
+	TouchableWithoutFeedback,
+	useColorScheme,
+	Alert,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import BottomSheet, {
-  BottomSheetView,
-  BottomSheetBackdrop,
-  useBottomSheetSpringConfigs,
+	BottomSheetView,
+	BottomSheetBackdrop,
+	useBottomSheetSpringConfigs,
 } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useToast } from "react-native-toast-notifications";
 import { Colors } from "../../../constants/Colors";
 import responsive from "../../../helpers/responsive";
 import GoogleIcon from "../../../../assets/icons/GOOGLE";
@@ -32,7 +32,6 @@ const LoginScreen: React.FC = () => {
 	const bottomSheetRef = useRef<BottomSheet>(null);
 	const [form, setForm] = useState({ email: "", password: "" });
 	const { login, isLoading, error } = useAuthStore();
-	const toast = useToast();
 	const snapPoints = ["60%", "70%"];
 	const navigation = useNavigation() as any;
 
@@ -63,24 +62,13 @@ const LoginScreen: React.FC = () => {
 	const handleLogin = async () => {
 		try {
 			await login(form.email, form.password);
-			toast.show("Login successful", {
-				type: "success",
-				animationType: "zoom-in",
-			});
-			// router.push("/(tabs)");
-			// Add any post-login navigation here
+			Alert.alert("Login successful");
 			if (error) {
-				toast.show(error || "Login failed", {
-					type: "danger",
-					animationType: "zoom-in",
-				});
+				Alert.alert(error || "Login failed");
 				return;
 			}
 		} catch (error: any) {
-			toast.show(error.message || "Login failed", {
-				type: "danger",
-				animationType: "zoom-in",
-			});
+			Alert.alert(error.message || "Login failed");
 		}
 	};
 

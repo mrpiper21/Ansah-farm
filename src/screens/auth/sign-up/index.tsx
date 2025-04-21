@@ -9,15 +9,11 @@ import {
 	TouchableWithoutFeedback,
 	KeyboardTypeOptions,
 	useColorScheme,
+	Alert,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import BottomSheet, {
-	BottomSheetView,
-	BottomSheetBackdrop,
-	useBottomSheetSpringConfigs,
-} from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useToast } from "react-native-toast-notifications";
 import { useForm } from "../../../store/form-store";
 import responsive from "../../../helpers/responsive";
 import { Colors } from "../../../constants/Colors";
@@ -29,9 +25,7 @@ import { useNavigation } from "@react-navigation/native";
 const SignUpScreen = () => {
 	const colorScheme = useColorScheme();
 	const colors = Colors[colorScheme ?? "light"];
-	const [isFarmer, setIsFarmer] = useState(false);
 	const bottomSheetRef = useRef<BottomSheet>(null);
-	const toast = useToast();
 	const snapPoints = ["65%", "75%"];
 	const { setFormValues, formValues, clearFormValues } = useForm();
 	const navigation = useNavigation() as any;
@@ -197,7 +191,7 @@ const SignUpScreen = () => {
 									console.log(formValues.location);
 									console.log(formValues.userType);
 									if (!formValues.location && !formValues.name) {
-										toast.show("All fields are required");
+										Alert.alert("All fiels are required");
 										return;
 									}
 									navigation.navigate("SignUpScreen2");
