@@ -81,7 +81,7 @@ const ExploreScreen = () => {
 			case "compost":
 				return (
 					<MaterialCommunityIcons
-						name="compost"
+						name="tree"
 						size={24}
 						color={Colors.light.primary}
 					/>
