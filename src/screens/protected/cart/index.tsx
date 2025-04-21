@@ -100,43 +100,47 @@ const CartScreen = () => {
 };
 
   const renderCartItem = ({ item }: { item: any }) => (
-    <View style={styles.cartItem}>
-      <Image 
-        source={{ uri: item.product.imageUrl || 'https://via.placeholder.com/150' }} 
-        style={styles.productImage}
-      />
-      <View style={styles.itemDetails}>
-        <Text style={styles.productName}>{item.product.name}</Text>
-        <Text style={styles.productPrice}>GHS{item.product.price.toFixed(2)}</Text>
-        <Text style={styles.farmerName}>Sold by: {item.product.farmer.userName}</Text>
-        
-        <View style={styles.quantityContainer}>
-          <TouchableOpacity 
-            onPress={() => handleDecreaseQuantity(item.product)}
-            style={styles.quantityButton}
-          >
-            <IconSymbol name="minus" size={20} color={Colors.light.text} />
-          </TouchableOpacity>
-          
-          <Text style={styles.quantityText}>{item.quantity}</Text>
-          
-          <TouchableOpacity 
-            onPress={() => handleIncreaseQuantity(item.product)}
-            style={styles.quantityButton}
-          >
-            <IconSymbol name="plus" size={20} color={Colors.light.text} />
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            onPress={() => removeFromCart(item.product._id)}
-            style={styles.deleteButton}
-          >
-            <IconSymbol name="trash" size={20} color={Colors.light.error} />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
+		<View style={styles.cartItem}>
+			<Image
+				source={{
+					uri: item.product.imageUrl || "https://via.placeholder.com/150",
+				}}
+				style={styles.productImage}
+			/>
+			<View style={styles.itemDetails}>
+				<Text style={styles.productName}>{item.product.name}</Text>
+				<Text style={styles.productPrice}>
+					GHS{item.product.price.toFixed(2)}
+				</Text>
+				{/* <Text style={styles.farmerName}>Sold by: {item?.product?.farmer?.userName}</Text> */}
+
+				<View style={styles.quantityContainer}>
+					<TouchableOpacity
+						onPress={() => handleDecreaseQuantity(item.product)}
+						style={styles.quantityButton}
+					>
+						<IconSymbol name="minus" size={20} color={Colors.light.text} />
+					</TouchableOpacity>
+
+					<Text style={styles.quantityText}>{item.quantity}</Text>
+
+					<TouchableOpacity
+						onPress={() => handleIncreaseQuantity(item.product)}
+						style={styles.quantityButton}
+					>
+						<IconSymbol name="plus" size={20} color={Colors.light.text} />
+					</TouchableOpacity>
+
+					<TouchableOpacity
+						onPress={() => removeFromCart(item.product._id)}
+						style={styles.deleteButton}
+					>
+						<IconSymbol name="trash" size={20} color={Colors.light.error} />
+					</TouchableOpacity>
+				</View>
+			</View>
+		</View>
+	);
 
   return (
     <View style={styles.container}>

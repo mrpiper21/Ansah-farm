@@ -3,21 +3,21 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type Product = {
-  _id: string;
-  name: string;
-  category: string;
-  description?: string;
-  price: number;
-  quantity: string;
-  imageUrl?: string;
-  farmer: {
-    _id: string;
-    userName: string;
-    email: string;
-    avatar?: string;
-  };
-  createdAt: string;
-  updatedAt: string;
+	_id: string;
+	name: string;
+	category: string;
+	description?: string;
+	price: number;
+	quantity: string;
+	imageUrl?: string;
+	farmer?: {
+		_id?: string;
+		userName?: string;
+		email?: string;
+		avatar?: string;
+	};
+	createdAt: string;
+	updatedAt: string;
 };
 
 type CartItem = {

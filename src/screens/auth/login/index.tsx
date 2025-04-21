@@ -23,16 +23,18 @@ import GoogleIcon from "../../../../assets/icons/GOOGLE";
 import useAuthStore from "../../../store/auth-store";
 import FormTextInput from "../../../components/input-elements/form-text-input";
 import Button from "../../../components/buttons/basic-button";
+import { useNavigation } from "@react-navigation/native";
 
-const LoginScreen:React.FC  = () => {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? "light"];
-  const [isFarmer, setIsFarmer] = useState(false);
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const [form, setForm] = useState({email: "", password: ""})
-  const { login, isLoading, error } = useAuthStore();
+const LoginScreen: React.FC = () => {
+	const colorScheme = useColorScheme();
+	const colors = Colors[colorScheme ?? "light"];
+	const [isFarmer, setIsFarmer] = useState(false);
+	const bottomSheetRef = useRef<BottomSheet>(null);
+	const [form, setForm] = useState({ email: "", password: "" });
+	const { login, isLoading, error } = useAuthStore();
 	const toast = useToast();
 	const snapPoints = ["60%", "70%"];
+	const navigation = useNavigation() as any;
 
 	const renderBackdrop = useCallback(
 		(props: any) => (
@@ -223,7 +225,7 @@ const LoginScreen:React.FC  = () => {
 							{/* Registration Link */}
 							<View style={styles.registerContainer}>
 								<Text style={{ color: colors.text + "CC" }}>New here? </Text>
-								<Pressable /*onPress={() => router.push("/auth/sign-up")}*/>
+								<Pressable onPress={() => navigation.navigate("SignUpScreen")}>
 									<Text
 										style={{
 											color: colors.accent,

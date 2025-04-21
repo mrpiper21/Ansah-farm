@@ -1,62 +1,147 @@
 // screens/ProductDetailsScreen.tsx
 import { RouteProp } from '@react-navigation/native';
-import { StyleSheet, Text, View, Image, ScrollView, ActivityIndicator } from 'react-native';
-import { useQuery } from '@tanstack/react-query'
-import { getProductDetails } from '../../../apis/product';
-import { Colors } from '../../../constants/Colors';
-import Button from '../../../components/buttons/basic-button';
-import responsive from '../../../helpers/responsive';
+import {
+	StyleSheet,
+	Text,
+	View,
+	Image,
+	ScrollView,
+	ActivityIndicator,
+	Alert,
+} from "react-native";
+import { useQuery } from "@tanstack/react-query";
+import { getProductDetails } from "../../../apis/product";
+import { Colors } from "../../../constants/Colors";
+import Button from "../../../components/buttons/basic-button";
+import responsive from "../../../helpers/responsive";
+import { useState } from "react";
+import useAuthStore from "../../../store/auth-store";
+import axios from "axios";
+import { baseUrl } from "../../../config/api";
 
 type ProductStackParamList = {
-  'product-details': { id: string };
+	"product-details": { id: string };
 };
 
-type ProductDetailsRouteProp = RouteProp<ProductStackParamList, 'product-details'>;
+type ProductDetailsRouteProp = RouteProp<
+	ProductStackParamList,
+	"product-details"
+>;
 
 interface ProductDetailsProps {
-  route: ProductDetailsRouteProp;
+	route: ProductDetailsRouteProp;
 }
 
 const ProductDetailsScreen = ({ route }: ProductDetailsProps) => {
-  const { id } = route.params;
+	const { id } = route.params;
+	const [loading, setLoading] = useState<boolean>(false);
+	const { user } = useAuthStore((state) => state);
 
-  console.log("product id -",id)
+	const {
+		data: product,
+		isLoading,
+		isError,
+		error,
+	} = useQuery({
+		queryKey: ["product", id],
+		queryFn: () => getProductDetails(id),
+	});
 
-  const {
-    data: product,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ['product', id],
-    queryFn: () => getProductDetails(id),
-  });
+	const handlePurchase = async () => {
+		const payload = {
+			buyer: user?.id,
+			items: [
+				{
+					product: id,
+					quantity: 1,
+				},
+			],
+		};
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
-      </View>
-    );
-  }
+		Alert.alert(
+			"Confirm Purchase",
+			`Are you sure you want to buy ${
+				product?.name
+			} for GHS${product?.price.toFixed(2)}?`,
+			[
+				{
+					text: "Cancel",
+					style: "cancel",
+				},
+				{
+					text: "Confirm",
+					onPress: async () => {
+						try {
+							setLoading(true);
+							const response = await axios.post(
+								`${baseUrl}/api/orders/create`,
+								payload
+							);
 
-  if (isError) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Error: {error.message}</Text>
-      </View>
-    );
-  }
+							// Check for success flag in response data
+							if (response.data.success) {
+								Alert.alert("Order Created Successfully");
+								// navigation.navigate("OrderConfirmation", {
+								//     orderId: response.data.order._id,
+								//     productName: product?.name,
+								//     price: product.price,
+								//     farmerName: product?.farmer?.userName,
+								// });
+							} else {
+								Alert.alert(
+									"Error",
+									response.data.error || "Failed to create order"
+								);
+							}
+						} catch (error: any) {
+							console.error("Order creation error:", error);
+							let errorMessage = "Failed to connect to server";
+							if (error.response) {
+								// Handle backend error response
+								errorMessage =
+									error.response.data.error ||
+									error.response.data.message ||
+									errorMessage;
+							} else if (error.request) {
+								// The request was made but no response was received
+								errorMessage = "No response from server";
+							}
+							Alert.alert("Error", errorMessage);
+						} finally {
+							setLoading(false);
+						}
+					},
+				},
+			],
+			{ cancelable: true }
+		);
+	};
 
-  if (!product) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Product not found</Text>
-      </View>
-    );
-  }
+	if (isLoading) {
+		return (
+			<View style={styles.loadingContainer}>
+				<ActivityIndicator size="large" color={Colors.light.primary} />
+			</View>
+		);
+	}
 
-  return (
+	if (isError) {
+		return (
+			<View style={styles.container}>
+				<Text style={styles.errorText}>Error: {error.message}</Text>
+			</View>
+		);
+	}
+
+	if (!product) {
+		return (
+			<View style={styles.container}>
+				<Text style={styles.errorText}>Product not found</Text>
+			</View>
+		);
+	}
+
+	return (
 		<ScrollView
 			style={styles.container}
 			contentContainerStyle={styles.contentContainer}
@@ -106,8 +191,16 @@ const ProductDetailsScreen = ({ route }: ProductDetailsProps) => {
 						</View>
 					</View>
 				</View>
-				<Button style={{ borderRadius: 30, marginTop: responsive.Dw(60) }}>
-					<Text>Purchase GHS{product.price}.00</Text>
+				<Button
+					disabled={loading}
+					onPress={handlePurchase}
+					style={{ borderRadius: 30, marginTop: responsive.Dw(60) }}
+				>
+					{loading ? (
+						<ActivityIndicator color={Colors.light.primary} />
+					) : (
+						<Text>Purchase GHS{product.price}.00</Text>
+					)}
 				</Button>
 			</View>
 		</ScrollView>

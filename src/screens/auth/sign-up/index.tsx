@@ -24,6 +24,7 @@ import { Colors } from "../../../constants/Colors";
 import FormTextInput from "../../../components/input-elements/form-text-input";
 import Button from "../../../components/buttons/basic-button";
 import GoogleIcon from "../../../../assets/icons/GOOGLE";
+import { useNavigation } from "@react-navigation/native";
 
 const SignUpScreen = () => {
 	const colorScheme = useColorScheme();
@@ -33,6 +34,7 @@ const SignUpScreen = () => {
 	const toast = useToast();
 	const snapPoints = ["65%", "75%"];
 	const { setFormValues, formValues, clearFormValues } = useForm();
+	const navigation = useNavigation() as any;
 
 	// const router = useRouter();
 
@@ -198,8 +200,7 @@ const SignUpScreen = () => {
 										toast.show("All fields are required");
 										return;
 									}
-									//TODO
-									// router.push("/auth/sign-up2");
+									navigation.navigate("SignUpScreen2");
 								}}
 								style={{ marginBottom: 24 }}
 							>
@@ -242,16 +243,16 @@ const SignUpScreen = () => {
 									Already have an account?{" "}
 								</Text>
 								<Pressable>
-										<Text
-											style={{
-												color: colors.accent,
-												fontWeight: "600",
-												textDecorationLine: "underline",
-											}}
-										>
-											Log In
-										</Text>
-									</Pressable>
+									<Text
+										style={{
+											color: colors.accent,
+											fontWeight: "600",
+											textDecorationLine: "underline",
+										}}
+									>
+										Log In
+									</Text>
+								</Pressable>
 							</View>
 						</BottomSheetView>
 					</BottomSheet>

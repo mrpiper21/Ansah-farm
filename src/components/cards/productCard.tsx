@@ -54,7 +54,7 @@ const ProductCard: FC<Props> = ({ product }) => {
 				},
 			],
 		};
-		console.log("payload --------------", payload);
+
 		Alert.alert(
 			"Confirm Purchase",
 			`Are you sure you want to buy ${
@@ -70,30 +70,40 @@ const ProductCard: FC<Props> = ({ product }) => {
 					onPress: async () => {
 						try {
 							setIsLoading(true);
-
 							const response = await axios.post(
 								`${baseUrl}/api/orders/create`,
 								payload
 							);
 
-							if (response.status === 201) {
-								navigation.navigate("OrderConfirmation", {
-									orderId: response?.data?.data.order?._id,
-									productName: product?.name,
-									price: product.price,
-									farmerName: product?.farmer?.userName,
-								});
+							// Check for success flag in response data
+							if (response.data.success) {
+								Alert.alert("Order Created Successfully");
+								// navigation.navigate("OrderConfirmation", {
+								//     orderId: response.data.order._id,
+								//     productName: product?.name,
+								//     price: product.price,
+								//     farmerName: product?.farmer?.userName,
+								// });
 							} else {
 								Alert.alert(
 									"Error",
-									response?.data?.error || "Failed to create order"
+									response.data.error || "Failed to create order"
 								);
 							}
 						} catch (error: any) {
-							Alert.alert(
-								"Error",
-								error.response?.data?.message || "Failed to connect to server"
-							);
+							console.error("Order creation error:", error);
+							let errorMessage = "Failed to connect to server";
+							if (error.response) {
+								// Handle backend error response
+								errorMessage =
+									error.response.data.error ||
+									error.response.data.message ||
+									errorMessage;
+							} else if (error.request) {
+								// The request was made but no response was received
+								errorMessage = "No response from server";
+							}
+							Alert.alert("Error", errorMessage);
 						} finally {
 							setIsLoading(false);
 						}
@@ -135,7 +145,10 @@ const ProductCard: FC<Props> = ({ product }) => {
 				}
 				style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
 			>
-				<Image source={{ uri: product.imageUrl }} style={styles.productImage} />
+				<Image
+					source={{ uri: product?.imageUrl }}
+					style={styles.productImage}
+				/>
 
 				{/* Product Details */}
 				<View
@@ -146,15 +159,15 @@ const ProductCard: FC<Props> = ({ product }) => {
 					}}
 				>
 					<View style={styles.detailsContainer}>
-						<Text style={styles.productName}>{product.name}</Text>
+						<Text style={styles.productName}>{product?.name}</Text>
 
 						<View style={styles.priceContainer}>
-							<Text style={styles.price}>GHS{product.price.toFixed(2)}</Text>
-							<Text style={styles.quantity}> / {product.quantity}</Text>
+							<Text style={styles.price}>GHS{product?.price.toFixed(2)}</Text>
+							<Text style={styles.quantity}> / {product?.quantity}</Text>
 						</View>
 
 						<Text style={styles.timestamp}>
-							{new Date(product.createdAt).toLocaleDateString()}
+							{new Date(product?.createdAt).toLocaleDateString()}
 						</Text>
 					</View>
 					<View

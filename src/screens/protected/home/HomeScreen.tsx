@@ -42,23 +42,33 @@ const farmingTips = [
 ];
 
 export default function FarmerDashboard() {
-    const { user } = useAuthStore((state) => state);
+    const { user, isAuthenticated } = useAuthStore((state) => state);
 
-    const navigation = useNavigation() as any
-    const [produceCount, setProduceCount] = useState<number>(0);
+		const navigation = useNavigation() as any;
+		const [produceCount, setProduceCount] = useState<number>(0);
 
-    const handleSubmit = (formData: any) => {
-        console.log("Form submitted:", formData);
-        // Here you would typically send the data to your backend
-    };
+		const handleSubmit = (formData: any) => {
+			console.log("Form submitted:", formData);
+			// Here you would typically send the data to your backend
+		};
 
-    if (user?.type === "client") {
+		if (!isAuthenticated || !user) {
+			// You can return a loading state or redirect to login
 			return (
-				<ClientHomePage />
+				<View
+					style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+				>
+					<Text>Please log in</Text>
+				</View>
 			);
 		}
 
+		if (user?.type === "client") {
+			return <ClientHomePage />;
+		}
+
 		useEffect(() => {
+			if (!user?.id) return;
 			const fetchProduct = async () => {
 				const response = await axios.get(
 					`${baseUrl}/api/products/farmer/${user?.id}`
@@ -70,7 +80,7 @@ export default function FarmerDashboard() {
 				}
 			};
 			fetchProduct();
-		}, []);
+		}, [user?.id]);
 
 		return (
 			<View style={{ flex: 1, position: "relative" }}>

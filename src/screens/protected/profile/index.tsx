@@ -4,10 +4,12 @@ import useAuthStore from '../../../store/auth-store';
 import { Colors } from '../../../constants/Colors';
 import { BlurView } from 'expo-blur';
 import { IconSymbol } from '../../../components/ui/IconSymbol';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 const ProfileScreen = () => {
 	const { logout, user } = useAuthStore((state) => state);
-	// const router = useRouter();
+	const navigation = useNavigation() as any;
 	//TODO
 	const isFarmer = user?.type === "farmer";
 	const colorScheme = useColorScheme();
@@ -15,7 +17,10 @@ const ProfileScreen = () => {
 
 	const handleLogout = async () => {
 		await logout();
-		// router.push("/auth");
+		await AsyncStorage.clear();
+		navigation.navigate("AuthNavigator", {
+			screen: "loginScreen",
+		});
 	};
 
 	if (!user) return null;
