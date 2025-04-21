@@ -32,7 +32,7 @@ const LoginScreen: React.FC = () => {
 	const bottomSheetRef = useRef<BottomSheet>(null);
 	const [form, setForm] = useState({ email: "", password: "" });
 	const { login, isLoading, error } = useAuthStore();
-	const snapPoints = ["60%", "70%"];
+	const snapPoints = ["60%", "80%"];
 	const navigation = useNavigation() as any;
 
 	const renderBackdrop = useCallback(
@@ -234,81 +234,81 @@ const LoginScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  heroContainer: {
-    height: "45%",
-    position: "relative",
-  },
-  heroImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  heroOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    opacity: 0.8,
-  },
-  heroContent: {
-    position: "absolute",
-    top: responsive.Dh(5),
-    paddingHorizontal: 24,
-  },
-  heroTitle: {
-    fontSize: 32,
-    fontWeight: "700",
-    lineHeight: 38,
-    marginBottom: 8,
-  },
-  heroSubtitle: {
-    fontSize: 16,
-    lineHeight: 22,
-    maxWidth: "80%",
-  },
-  bottomSheetContent: {
-    padding: 24,
-    flex: 1,
-  },
-  dividerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    fontSize: 14,
-    paddingHorizontal: 12,
-  },
-  registerContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 32,
-    paddingHorizontal: 12,
-  },
-  userTypeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 24,
-    paddingVertical: 8,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    borderWidth: 2,
-    marginRight: 12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  userTypeLabel: {
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  expandButton: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1,
-  },
+	heroContainer: {
+		height: "45%",
+		position: "relative",
+	},
+	heroImage: {
+		width: "100%",
+		height: "100%",
+		resizeMode: "cover",
+	},
+	heroOverlay: {
+		...StyleSheet.absoluteFillObject,
+		opacity: 0.8,
+	},
+	heroContent: {
+		position: "absolute",
+		top: responsive.Dh(5),
+		paddingHorizontal: 24,
+	},
+	heroTitle: {
+		fontSize: 32,
+		fontWeight: "700",
+		lineHeight: 38,
+		marginBottom: 8,
+	},
+	heroSubtitle: {
+		fontSize: 16,
+		lineHeight: 22,
+		maxWidth: "80%",
+	},
+	bottomSheetContent: {
+		padding: 24,
+		flex: 1,
+	},
+	dividerContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+		marginVertical: responsive.Dw(5),
+	},
+	dividerLine: {
+		flex: 1,
+		height: 1,
+	},
+	dividerText: {
+		fontSize: 14,
+		paddingHorizontal: 12,
+	},
+	registerContainer: {
+		flexDirection: "row",
+		justifyContent: "center",
+		marginTop: 32,
+		paddingHorizontal: 12,
+	},
+	userTypeContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+		marginBottom: 24,
+		paddingVertical: 8,
+	},
+	checkbox: {
+		width: 24,
+		height: 24,
+		borderRadius: 6,
+		borderWidth: 2,
+		marginRight: 12,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	userTypeLabel: {
+		fontSize: 16,
+		fontWeight: "500",
+	},
+	expandButton: {
+		...StyleSheet.absoluteFillObject,
+		zIndex: 1,
+	},
 });
 
 export default LoginScreen;

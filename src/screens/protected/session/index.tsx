@@ -59,107 +59,110 @@ const SessionScreen = () => {
 	//TODO
 
 	return (
-		<View style={styles.container}>
-			{/* Header */}
-			<View style={styles.header}>
-				<Text style={styles.headerText}>Messages & Orders</Text>
-			</View>
+		// <View style={styles.container}>
+		// 	{/* Header */}
+		// 	<View style={styles.header}>
+		// 		<Text style={styles.headerText}>Messages & Orders</Text>
+		// 	</View>
 
-			{/* Tab Bar */}
-			<View style={styles.tabContainer}>
-				<TouchableOpacity
-					style={[styles.tab, activeTab === "chat" && styles.activeTab]}
-					onPress={() => setActiveTab("chat")}
-				>
-					<Text
-						style={[
-							styles.tabText,
-							activeTab === "chat" && styles.activeTabText,
-						]}
-					>
-						Chat
-					</Text>
-				</TouchableOpacity>
-				<TouchableOpacity
-					style={[styles.tab, activeTab === "orders" && styles.activeTab]}
-					onPress={() => setActiveTab("orders")}
-				>
-					<Text
-						style={[
-							styles.tabText,
-							activeTab === "orders" && styles.activeTabText,
-						]}
-					>
-						Orders
-					</Text>
-				</TouchableOpacity>
-			</View>
+		// 	{/* Tab Bar */}
+		// 	<View style={styles.tabContainer}>
+		// 		<TouchableOpacity
+		// 			style={[styles.tab, activeTab === "chat" && styles.activeTab]}
+		// 			onPress={() => setActiveTab("chat")}
+		// 		>
+		// 			<Text
+		// 				style={[
+		// 					styles.tabText,
+		// 					activeTab === "chat" && styles.activeTabText,
+		// 				]}
+		// 			>
+		// 				Chat
+		// 			</Text>
+		// 		</TouchableOpacity>
+		// 		<TouchableOpacity
+		// 			style={[styles.tab, activeTab === "orders" && styles.activeTab]}
+		// 			onPress={() => setActiveTab("orders")}
+		// 		>
+		// 			<Text
+		// 				style={[
+		// 					styles.tabText,
+		// 					activeTab === "orders" && styles.activeTabText,
+		// 				]}
+		// 			>
+		// 				Orders
+		// 			</Text>
+		// 		</TouchableOpacity>
+		// 	</View>
 
-			{/* Tab Content */}
-			{activeTab === "chat" ? (
-				<FlatList
-					data={chatData}
-					keyExtractor={(item) => item.id}
-					renderItem={({ item }) => (
-						<TouchableOpacity
-							// onPress={() =>
-							// 	router.push({
-							// 		pathname: "/[chatID]",
-							// 		params: { chatID: item.id },
-							// 	})
-							// }
-							style={styles.chatItem}
-						>
-							<View style={styles.chatAvatar}>
-								<Text style={styles.avatarText}>{item.name.charAt(0)}</Text>
-							</View>
-							<View style={styles.chatContent}>
-								<View style={styles.chatHeader}>
-									<Text style={styles.chatName}>{item.name}</Text>
-									<Text style={styles.chatTime}>{item.time}</Text>
-								</View>
-								<Text
-									style={[
-										styles.chatMessage,
-										item.unread && styles.unreadMessage,
-									]}
-									numberOfLines={1}
-								>
-									{item.lastMessage}
-								</Text>
-							</View>
-							{item.unread && <View style={styles.unreadBadge} />}
-						</TouchableOpacity>
-					)}
-				/>
-			) : (
-				<FlatList
-					data={orderData}
-					keyExtractor={(item) => item.id}
-					renderItem={({ item }) => (
-						<View style={styles.orderItem}>
-							<View style={styles.orderHeader}>
-								<Text style={styles.orderNumber}>{item.orderNumber}</Text>
-								<Text
-									style={[
-										styles.orderStatus,
-										item.status === "Delivered" && styles.statusDelivered,
-										item.status === "Pending" && styles.statusProcessing,
-										item.status === "Completed" && styles.statusShipped,
-									]}
-								>
-									{item.status}
-								</Text>
-							</View>
-							<Text style={styles.orderDate}>{item.date}</Text>
-							<Text style={styles.orderItems}>{item.items}</Text>
-							<TouchableOpacity style={styles.orderButton}>
-								<Text style={styles.orderButtonText}>View Details</Text>
-							</TouchableOpacity>
-						</View>
-					)}
-				/>
-			)}
+		// 	{/* Tab Content */}
+		// 	{activeTab === "chat" ? (
+		// 		<FlatList
+		// 			data={chatData}
+		// 			keyExtractor={(item) => item.id}
+		// 			renderItem={({ item }) => (
+		// 				<TouchableOpacity
+		// 					// onPress={() =>
+		// 					// 	router.push({
+		// 					// 		pathname: "/[chatID]",
+		// 					// 		params: { chatID: item.id },
+		// 					// 	})
+		// 					// }
+		// 					style={styles.chatItem}
+		// 				>
+		// 					<View style={styles.chatAvatar}>
+		// 						<Text style={styles.avatarText}>{item.name.charAt(0)}</Text>
+		// 					</View>
+		// 					<View style={styles.chatContent}>
+		// 						<View style={styles.chatHeader}>
+		// 							<Text style={styles.chatName}>{item.name}</Text>
+		// 							<Text style={styles.chatTime}>{item.time}</Text>
+		// 						</View>
+		// 						<Text
+		// 							style={[
+		// 								styles.chatMessage,
+		// 								item.unread && styles.unreadMessage,
+		// 							]}
+		// 							numberOfLines={1}
+		// 						>
+		// 							{item.lastMessage}
+		// 						</Text>
+		// 					</View>
+		// 					{item.unread && <View style={styles.unreadBadge} />}
+		// 				</TouchableOpacity>
+		// 			)}
+		// 		/>
+		// 	) : (
+		// 		<FlatList
+		// 			data={orderData}
+		// 			keyExtractor={(item) => item.id}
+		// 			renderItem={({ item }) => (
+		// 				<View style={styles.orderItem}>
+		// 					<View style={styles.orderHeader}>
+		// 						<Text style={styles.orderNumber}>{item.orderNumber}</Text>
+		// 						<Text
+		// 							style={[
+		// 								styles.orderStatus,
+		// 								item.status === "Delivered" && styles.statusDelivered,
+		// 								item.status === "Pending" && styles.statusProcessing,
+		// 								item.status === "Completed" && styles.statusShipped,
+		// 							]}
+		// 						>
+		// 							{item.status}
+		// 						</Text>
+		// 					</View>
+		// 					<Text style={styles.orderDate}>{item.date}</Text>
+		// 					<Text style={styles.orderItems}>{item.items}</Text>
+		// 					<TouchableOpacity style={styles.orderButton}>
+		// 						<Text style={styles.orderButtonText}>View Details</Text>
+		// 					</TouchableOpacity>
+		// 				</View>
+		// 			)}
+		// 		/>
+		// 	)}
+		// </View>
+		<View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+			<Text>In development</Text>
 		</View>
 	);
 };
