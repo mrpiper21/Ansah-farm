@@ -30,29 +30,9 @@ export default function SignUpScreen2() {
 	const bottomSheetRef = useRef<BottomSheet>(null);
 	const [createFucntionIsCalled, setCreateFuctionIsCalled] =
 		useState<boolean>(false);
-	const snapPoints = ["60%", "75%"];
+	const snapPoints = ["75%"];
 	const { setFormValues, formValues, clearFormValues } = useForm();
 	const { register, isLoading } = useAuthStore();
-
-	const animationConfigs = useBottomSheetSpringConfigs({
-		damping: 80,
-		overshootClamping: true,
-		restDisplacementThreshold: 0.1,
-		restSpeedThreshold: 0.1,
-		stiffness: 1500,
-	});
-
-	// const renderBackdrop = useCallback(
-	// 	(props: any) => (
-	// 		<BottomSheetBackdrop
-	// 			{...props}
-	// 			disappearsOnIndex={-1}
-	// 			appearsOnIndex={0}
-	// 			opacity={0.1}
-	// 		/>
-	// 	),
-	// 	[]
-	// );
 
 	const handleDismissKeyboard = useCallback(() => {
 		Keyboard.dismiss();
@@ -119,24 +99,18 @@ export default function SignUpScreen2() {
 				{/* Bottom Sheet Form */}
 				<BottomSheet
 					ref={bottomSheetRef}
-					index={0}
+					index={1}
 					snapPoints={snapPoints}
-					// backdropComponent={renderBackdrop}
-					animationConfigs={animationConfigs}
-					handleIndicatorStyle={{
-						backgroundColor: colors.text + "80",
-						width: 40,
-						height: 4,
-					}}
+					handleComponent={null}
+					enablePanDownToClose={false}
+					enableOverDrag={false}
+					enableHandlePanningGesture={false}
+					enableContentPanningGesture={false}
 					backgroundStyle={{
 						backgroundColor: colors.surface,
 						borderTopLeftRadius: 32,
 						borderTopRightRadius: 32,
 					}}
-					// enablePanDownToClose={false}
-					// keyboardBehavior="interactive"
-					// keyboardBlurBehavior="restore"
-					// android_keyboardInputMode="adjustPan"
 				>
 					<TouchableWithoutFeedback onPress={handleDismissKeyboard}>
 						<BottomSheetView style={styles.bottomSheetContent}>
@@ -174,44 +148,48 @@ export default function SignUpScreen2() {
 								},
 								{ label: "Password", icon: "lock", secure: true },
 								{ label: "Confirm Password", icon: "lock-reset", secure: true },
-							].map((field) => (
-								<FormTextInput
-									onChangeText={(text) =>
-										setFormValues(
-											field.icon === "email"
-												? "email"
-												: field.icon === "lock"
-												? "password"
-												: "confirm_password",
-											text
-										)
-									}
-									key={field.label}
-									label={field.label}
-									placeholder={
-										field.label === "Email Address"
-											? "john@farmershub.com"
-											: "••••••••"
-									}
-									secure={field.secure}
-									iconLeft={
-										<MaterialIcons
-											name={field.icon as any}
-											size={20}
-											color={colors.text + "80"}
-										/>
-									}
-									error={
-										createFucntionIsCalled &&
-										field.icon === "lock-reset" &&
-										formValues.password !== formValues.confirm_password
-											? "Passwords do not match"
-											: undefined
-									}
-									style={{ marginBottom: 20 }}
-									{...field.props}
-								/>
-							))}
+							].map((field) => {
+								if (formValues.userType === "farmer" && field.icon === "email")
+									return null;
+								return (
+									<FormTextInput
+										onChangeText={(text) =>
+											setFormValues(
+												field.icon === "email"
+													? "email"
+													: field.icon === "lock"
+													? "password"
+													: "confirm_password",
+												text
+											)
+										}
+										key={field.label}
+										label={field.label}
+										placeholder={
+											field.label === "Email Address"
+												? "john@farmershub.com"
+												: "••••••••"
+										}
+										secure={field.secure}
+										iconLeft={
+											<MaterialIcons
+												name={field.icon as any}
+												size={20}
+												color={colors.text + "80"}
+											/>
+										}
+										error={
+											createFucntionIsCalled &&
+											field.icon === "lock-reset" &&
+											formValues.password !== formValues.confirm_password
+												? "Passwords do not match"
+												: undefined
+										}
+										style={{ marginBottom: 20 }}
+										{...field.props}
+									/>
+								);
+							})}
 
 							<Button
 								size="lg"
@@ -222,9 +200,7 @@ export default function SignUpScreen2() {
 							>
 								Create Account
 							</Button>
-
-							{/* Divider */}
-							<View style={styles.dividerContainer}>
+							{/* <View style={styles.dividerContainer}>
 								<View
 									style={[
 										styles.dividerLine,
@@ -244,14 +220,13 @@ export default function SignUpScreen2() {
 								/>
 							</View>
 
-							{/* Social Login */}
 							<Button
 								variant="outline"
 								iconLeft={<GoogleIcon />}
 								onPress={() => {}}
 							>
 								Continue with Google
-							</Button>
+							</Button> */}
 						</BottomSheetView>
 					</TouchableWithoutFeedback>
 				</BottomSheet>

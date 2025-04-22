@@ -11,28 +11,31 @@ const Stack = createStackNavigator();
 const AppNavigator = () => {
   const {user} = useAuthStore((state) => state)
   return (
-    <NavigationContainer>
-       <Stack.Navigator>
-        {user?.id ?   <>
-          <Stack.Screen 
-          name="Tabs" 
-          component={TabsNavigator} 
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="dynamicNavigator" 
-          component={DynamicNavigator} 
-          options={{ headerShown: false }}
-        />
-        </> : <Stack.Screen 
-          name="AuthNavigator" 
-          component={AuthNavigator} 
-          options={{ headerShown: false }}
-        />}
-      
-      </Stack.Navigator>
-    </NavigationContainer>
-  )
+		<NavigationContainer>
+			<Stack.Navigator>
+				{user ? (
+					<>
+						<Stack.Screen
+							name="Tabs"
+							component={TabsNavigator}
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="dynamicNavigator"
+							component={DynamicNavigator}
+							options={{ headerShown: false }}
+						/>
+					</>
+				) : (
+					<Stack.Screen
+						name="AuthNavigator"
+						component={AuthNavigator}
+						options={{ headerShown: false }}
+					/>
+				)}
+			</Stack.Navigator>
+		</NavigationContainer>
+	);
 }
 
 export default AppNavigator

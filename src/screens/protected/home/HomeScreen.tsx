@@ -53,49 +53,44 @@ export default function FarmerDashboard() {
 		// Here you would typically send the data to your backend
 	};
 
-	if (!isAuthenticated || !user) {
-		// You can return a loading state or redirect to login
-		return (
-			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-				<Text>Please log in</Text>
-			</View>
-		);
-	}
+    useEffect(() => {
+			if (!user?.id) return;
+			const fetchProduct = async () => {
+				const response = await axios.get(
+					`${baseUrl}/api/products/farmer/${user?.id}`
+				);
+				if (response.data.data) {
+					setProduceCount(response?.data?.data?.length);
+				}
+			};
+			fetchProduct();
+		}, [user?.id]);
 
-	if (user?.type === "client") {
-		return <ClientHomePage />;
-	}
+		const { data: orders } = useQuery({
+			queryKey: ["farmerOrders", user?.id],
+			queryFn: async () => {
+				const response = await axios.get(
+					`${baseUrl}/api/orders/farmer-orders/${user?.id}`
+				);
+				return response.data.data;
+			},
+			enabled: !!user?.id,
+		});
 
-	useEffect(() => {
-		if (!user?.id) return;
-		const fetchProduct = async () => {
-			const response = await axios.get(
-				`${baseUrl}/api/products/farmer/${user?.id}`
+		if (!isAuthenticated || !user) {
+			// You can return a loading state or redirect to login
+			return (
+				<View
+					style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+				>
+					<Text>Please log in</Text>
+				</View>
 			);
+		}
 
-			if (response.data.data) {
-				console.log(response?.data?.data);
-				setProduceCount(response?.data?.data?.length);
-			}
-		};
-		fetchProduct();
-	}, [user?.id]);
-
-	const {
-		data: orders,
-		isLoading,
-		isError,
-		error,
-	} = useQuery({
-		queryKey: ["farmerOrders", user?.id],
-		queryFn: async () => {
-			const response = await axios.get(
-				`${baseUrl}/api/orders/farmer-orders/${user?.id}`
-			);
-			return response.data.data;
-		},
-		enabled: !!user?.id,
-	});
+		if (user?.type === "client") {
+			return <ClientHomePage />;
+		}
 
 	return (
 		<View style={{ flex: 1, position: "relative" }}>

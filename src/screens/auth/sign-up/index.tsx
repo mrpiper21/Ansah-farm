@@ -10,6 +10,7 @@ import {
 	KeyboardTypeOptions,
 	useColorScheme,
 	Alert,
+	ActivityIndicator,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
@@ -19,16 +20,20 @@ import responsive from "../../../helpers/responsive";
 import { Colors } from "../../../constants/Colors";
 import FormTextInput from "../../../components/input-elements/form-text-input";
 import Button from "../../../components/buttons/basic-button";
-import GoogleIcon from "../../../../assets/icons/GOOGLE";
+// import GoogleIcon from "../../../../assets/icons/GOOGLE";
 import { useNavigation } from "@react-navigation/native";
+import { IconSymbol } from "../../../components/ui/IconSymbol";
+import axios from "axios";
+import { baseUrl } from "../../../config/api";
 
 const SignUpScreen = () => {
 	const colorScheme = useColorScheme();
 	const colors = Colors[colorScheme ?? "light"];
 	const bottomSheetRef = useRef<BottomSheet>(null);
-	const snapPoints = ["65%", "75%"];
+	const snapPoints = ["65%", "80%"];
 	const { setFormValues, formValues, clearFormValues } = useForm();
 	const navigation = useNavigation() as any;
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	// const router = useRouter();
 
@@ -39,6 +44,46 @@ const SignUpScreen = () => {
 	useEffect(() => {
 		clearFormValues();
 	}, []);
+
+	const hanldleNext = async () => {
+		// console.log(formValues.location);
+		// console.log(formValues.userType);
+		if (
+			(!formValues.location && !formValues.name) ||
+			(formValues.userType === "farmer" &&
+				!formValues.code &&
+				!formValues.email)
+		) {
+			Alert.alert("All fiels are required");
+			return;
+		}
+
+		if (formValues.code) {
+			setIsLoading(true);
+			try {
+				const response = await axios.post(`${baseUrl}/api/users/validate`, {
+					code: formValues?.code,
+					email: formValues?.email,
+				});
+				if (response.status == 200) {
+					Alert.alert("Code validated successfully");
+					navigation.navigate("SignUpScreen2");
+					setIsLoading(false);
+					return;
+				}
+
+				Alert.alert("Invalid Code. Contact Admin");
+				return;
+			} catch (error) {
+				console.log(error);
+				setIsLoading(false);
+				Alert.alert("Invalid Code. Contact Admin");
+			}
+		} else {
+			navigation.navigate("SignUpScreen2");
+			return;
+		}
+	};
 
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
@@ -183,26 +228,53 @@ const SignUpScreen = () => {
 								style={{ marginBottom: 20 }}
 							/>
 
+							{formValues?.userType === "farmer" && (
+								<>
+									<FormTextInput
+										onChangeText={(text: string) => setFormValues("code", text)}
+										label="CODE"
+										placeholder="Provide your 4 digit pin"
+										iconLeft={
+											<IconSymbol
+												name="lock"
+												size={20}
+												color={colors.text + "80"}
+											/>
+										}
+										style={{ marginBottom: 20 }}
+									/>
+									<FormTextInput
+										onChangeText={(text: string) =>
+											setFormValues("email", text)
+										}
+										label="Email"
+										placeholder="Email address"
+										iconLeft={
+											<IconSymbol
+												name="mail"
+												size={20}
+												color={colors.text + "80"}
+											/>
+										}
+										style={{ marginBottom: 20 }}
+									/>
+								</>
+							)}
 							<Button
 								size="lg"
 								variant="primary"
-								onPress={() => {
-									// console.log(formValues.userType)
-									console.log(formValues.location);
-									console.log(formValues.userType);
-									if (!formValues.location && !formValues.name) {
-										Alert.alert("All fiels are required");
-										return;
-									}
-									navigation.navigate("SignUpScreen2");
-								}}
+								onPress={hanldleNext}
 								style={{ marginBottom: 24 }}
 							>
-								Next
+								{isLoading ? (
+									<ActivityIndicator color={Colors.light.secondary} />
+								) : (
+									<Text>Next</Text>
+								)}
 							</Button>
 
 							{/* Divider */}
-							<View style={styles.dividerContainer}>
+							{/* <View style={styles.dividerContainer}>
 								<View
 									style={[
 										styles.dividerLine,
@@ -220,16 +292,16 @@ const SignUpScreen = () => {
 										{ backgroundColor: colors.text + "20" },
 									]}
 								/>
-							</View>
+							</View> */}
 
 							{/* Social Login */}
-							<Button
+							{/* <Button
 								variant="outline"
 								iconLeft={<GoogleIcon />}
 								onPress={() => {}}
 							>
 								Continue with Google
-							</Button>
+							</Button> */}
 
 							{/* Existing Account */}
 							<View style={styles.registerContainer}>
@@ -306,7 +378,7 @@ const styles = StyleSheet.create({
 	registerContainer: {
 		flexDirection: "row",
 		justifyContent: "center",
-		marginTop: 32,
+		marginTop: responsive.Dw(25),
 		paddingHorizontal: 12,
 	},
 	userTypeContainer: {
