@@ -45,43 +45,58 @@ const SignUpScreen = () => {
 		clearFormValues();
 	}, []);
 
-	const hanldleNext = async () => {
-		// console.log(formValues.location);
-		// console.log(formValues.userType);
-		if (
-			(!formValues.location && !formValues.name) ||
-			(formValues.userType === "farmer" &&
-				!formValues.code &&
-				!formValues.email)
-		) {
-			Alert.alert("All fiels are required");
+	const handleNext = async () => {
+		// Validate required fields based on user type
+		if (!formValues.name || !formValues.location) {
+			Alert.alert("Error", "Name and location are required for all users");
 			return;
 		}
 
-		if (formValues.code) {
-			setIsLoading(true);
-			try {
+		if (formValues.userType === "farmer") {
+			if (!formValues.email || !formValues.code) {
+				Alert.alert("Error", "Email and code are required for farmers");
+				return;
+			}
+			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			if (!emailRegex.test(formValues.email)) {
+				Alert.alert("Error", "Please enter a valid email address");
+				return;
+			}
+			const codeRegex = /^\d{4}$/;
+			if (!codeRegex.test(formValues.code)) {
+				Alert.alert("Error", "Code must be a 4-digit number");
+				return;
+			}
+		}
+
+		setIsLoading(true);
+
+		try {
+			if (formValues.userType === "farmer") {
 				const response = await axios.post(`${baseUrl}/api/users/validate`, {
-					code: formValues?.code,
-					email: formValues?.email,
+					code: formValues.code,
+					email: formValues.email,
 				});
-				if (response.status == 200) {
-					Alert.alert("Code validated successfully");
-					navigation.navigate("SignUpScreen2");
+
+				if (response.status !== 200) {
+					Alert.alert("Error", "Invalid code. Please contact admin.");
 					setIsLoading(false);
 					return;
 				}
-
-				Alert.alert("Invalid Code. Contact Admin");
-				return;
-			} catch (error) {
-				console.log(error);
-				setIsLoading(false);
-				Alert.alert("Invalid Code. Contact Admin");
 			}
-		} else {
+
 			navigation.navigate("SignUpScreen2");
-			return;
+		} catch (error) {
+			console.error("Validation error:", error);
+
+			let errorMessage = "An error occurred during validation";
+			if (axios.isAxiosError(error)) {
+				errorMessage = error.response?.data?.message || error.message;
+			}
+
+			Alert.alert("Error", errorMessage);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -263,7 +278,7 @@ const SignUpScreen = () => {
 							<Button
 								size="lg"
 								variant="primary"
-								onPress={hanldleNext}
+								onPress={handleNext}
 								style={{ marginBottom: 24 }}
 							>
 								{isLoading ? (

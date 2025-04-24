@@ -9,6 +9,7 @@ import {
 	TouchableWithoutFeedback,
 	useColorScheme,
 	Alert,
+	TouchableOpacity,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import BottomSheet, {
@@ -213,7 +214,12 @@ const LoginScreen: React.FC = () => {
 							{/* Registration Link */}
 							<View style={styles.registerContainer}>
 								<Text style={{ color: colors.text + "CC" }}>New here? </Text>
-								<Pressable onPress={() => navigation.navigate("SignUpScreen")}>
+								<TouchableOpacity
+									onPress={() => {
+										console.log("clicking----");
+										navigation.navigate("SignUpScreen");
+									}}
+								>
 									<Text
 										style={{
 											color: colors.accent,
@@ -223,7 +229,7 @@ const LoginScreen: React.FC = () => {
 									>
 										Create Account
 									</Text>
-								</Pressable>
+								</TouchableOpacity>
 							</View>
 						</BottomSheetView>
 					</BottomSheet>

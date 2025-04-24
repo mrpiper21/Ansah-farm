@@ -19,6 +19,7 @@ import WeatherAdvisory from "../../../components/weather/weather-advisory";
 import useAuthStore from "../../../store/auth-store";
 import ClientHomePage from "./client/ClientHomePage";
 import { useQuery } from "@tanstack/react-query";
+import responsive from "../../../helpers/responsive";
 
 // Sample farming tips data
 const farmingTips = [
@@ -53,44 +54,42 @@ export default function FarmerDashboard() {
 		// Here you would typically send the data to your backend
 	};
 
-    useEffect(() => {
-			if (!user?.id) return;
-			const fetchProduct = async () => {
-				const response = await axios.get(
-					`${baseUrl}/api/products/farmer/${user?.id}`
-				);
-				if (response.data.data) {
-					setProduceCount(response?.data?.data?.length);
-				}
-			};
-			fetchProduct();
-		}, [user?.id]);
-
-		const { data: orders } = useQuery({
-			queryKey: ["farmerOrders", user?.id],
-			queryFn: async () => {
-				const response = await axios.get(
-					`${baseUrl}/api/orders/farmer-orders/${user?.id}`
-				);
-				return response.data.data;
-			},
-			enabled: !!user?.id,
-		});
-
-		if (!isAuthenticated || !user) {
-			// You can return a loading state or redirect to login
-			return (
-				<View
-					style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-				>
-					<Text>Please log in</Text>
-				</View>
+	useEffect(() => {
+		if (!user?.id) return;
+		const fetchProduct = async () => {
+			const response = await axios.get(
+				`${baseUrl}/api/products/farmer/${user?.id}`
 			);
-		}
+			if (response.data.data) {
+				setProduceCount(response?.data?.data?.length);
+			}
+		};
+		fetchProduct();
+	}, [user?.id]);
 
-		if (user?.type === "client") {
-			return <ClientHomePage />;
-		}
+	const { data: orders } = useQuery({
+		queryKey: ["farmerOrders", user?.id],
+		queryFn: async () => {
+			const response = await axios.get(
+				`${baseUrl}/api/orders/farmer-orders/${user?.id}`
+			);
+			return response.data.data;
+		},
+		enabled: !!user?.id,
+	});
+
+	if (!isAuthenticated || !user) {
+		// You can return a loading state or redirect to login
+		return (
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				<Text>Please log in</Text>
+			</View>
+		);
+	}
+
+	if (user?.type === "client") {
+		return <ClientHomePage />;
+	}
 
 	return (
 		<View style={{ flex: 1, position: "relative" }}>
@@ -100,35 +99,51 @@ export default function FarmerDashboard() {
 
 				{/* Stats Grid */}
 				<View style={styles.statsGrid}>
-					{/* <TouchableOpacity style={[styles.statCard, styles.statCardPrimary]}>
-                        <MaterialIcons name="grass" size={28} color="white" />
-                        <Text style={styles.statNumber}>5</Text>
-                        <Text style={styles.statLabel}>Active Crops</Text>
-                    </TouchableOpacity> */}
+					{/* Orders Card */}
 					<TouchableOpacity
 						onPress={() => {
 							navigation.navigate("dynamicNavigator", {
 								screen: "farmer-orders",
-								// params: { id: product._id }
 							});
 						}}
-						style={[styles.statCard, styles.statCardSecondary]}
+						style={styles.statCard}
 					>
-						<Feather name="check-circle" size={28} color="white" />
-						<Text style={styles.statNumber}>{orders?.length}</Text>
-						<Text style={styles.statLabel}>Orders</Text>
+						<Image
+							source={require("../../../../assets/images/delivery.jpg")}
+							style={styles.cardBackgroundImage}
+							resizeMode="cover"
+						/>
+						<View style={styles.cardOverlay} />
+						<View style={styles.cardContent}>
+							<View style={styles.iconContainer}>
+								<Feather name="check-circle" size={24} color="white" />
+							</View>
+							<Text style={styles.statNumber}>{orders?.length || 0}</Text>
+							<Text style={styles.statLabel}>Orders</Text>
+						</View>
 					</TouchableOpacity>
+
 					<TouchableOpacity
 						onPress={() => {
 							navigation.navigate("dynamicNavigator", {
 								screen: "farmer-produce",
 							});
 						}}
-						style={[styles.statCard, { backgroundColor: Colors.light.text }]}
+						style={styles.statCard}
 					>
-						<FontAwesome name="leaf" size={28} color="white" />
-						<Text style={styles.statNumber}>{produceCount}</Text>
-						<Text style={styles.statLabel}>Produce</Text>
+						<Image
+							source={require("../../../../assets/images/FarmersMarkets.jpg")}
+							style={styles.cardBackgroundImage}
+							resizeMode="cover"
+						/>
+						<View style={styles.cardOverlay} />
+						<View style={styles.cardContent}>
+							<View style={styles.iconContainer}>
+								<FontAwesome name="leaf" size={24} color="white" />
+							</View>
+							<Text style={styles.statNumber}>{produceCount || 0}</Text>
+							<Text style={styles.statLabel}>Produce</Text>
+						</View>
 					</TouchableOpacity>
 				</View>
 
@@ -208,164 +223,205 @@ export default function FarmerDashboard() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.light.background,
-        paddingHorizontal: 16,
-        position: "relative",
-    },
-    weatherContainer: {
-        borderRadius: 20,
-        marginVertical: 16,
-        overflow: "hidden",
-        elevation: 4,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-    },
-    statsGrid: {
-        flexDirection: "row",
-        gap: 16,
-        marginBottom: 24,
-        flexWrap: "wrap",
-    },
-    sellButtonContainer: {
-        position: "absolute",
-        alignItems: "center",
-        justifyContent: "center",
-        bottom: 20,
-        right: 20,
-        zIndex: 50,
-    },
-    statCard: {
-        flex: 1,
-        borderRadius: 16,
-        padding: 20,
-        alignItems: "center",
-        justifyContent: "center",
-        aspectRatio: 1,
-    },
-    statCardPrimary: {
-        backgroundColor: Colors.light.primary,
-    },
-    statCardSecondary: {
-        backgroundColor: Colors.light.secondary,
-    },
-    statNumber: {
-        fontSize: 28,
-        fontWeight: "700",
-        color: "white",
-        marginVertical: 8,
-    },
-    statLabel: {
-        fontSize: 14,
-        color: "white",
-        textAlign: "center",
-        opacity: 0.9,
-    },
-    section: {
-        marginBottom: 24,
-    },
-    sectionHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 16,
-    },
-    sectionTitle: {
-        fontSize: 20,
-        fontWeight: "700",
-        color: Colors.light.text,
-        letterSpacing: 0.5,
-    },
-    seeAllButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 4,
-    },
-    seeAllText: {
-        color: Colors.light.primary,
-        fontSize: 14,
-        fontWeight: "500",
-    },
-    tipCard: {
-        borderRadius: 16,
-        marginBottom: 12,
-        overflow: "hidden",
-        elevation: 2,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    },
-    tipGradient: {
-        padding: 16,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    tipHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 12,
-    },
-    tipContent: {
-        flex: 1,
-    },
-    categoryIndicator: {
-        padding: 6,
-        borderRadius: 8,
-    },
-    tipTitle: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: Colors.light.text,
-        marginBottom: 8,
-    },
-    tipDescription: {
-        fontSize: 14,
-        color: Colors.light.text,
-        opacity: 0.8,
-        lineHeight: 20,
-    },
-    tipCategory: {
-        fontSize: 12,
-        fontWeight: "500",
-        color: Colors.light.secondary,
-    },
-    tipButton: {
-        padding: 8,
-    },
-    advisoryCard: {
-        borderRadius: 16,
-        padding: 20,
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 16,
-        marginBottom: 24,
-    },
-    advisoryTextContainer: {
-        flex: 1,
-    },
-    advisoryTitle: {
-        fontSize: 16,
-        fontWeight: "700",
-        color: "white",
-        marginBottom: 8,
-    },
-    advisoryText: {
-        fontSize: 14,
-        color: "white",
-        opacity: 0.9,
-        lineHeight: 20,
-    },
-    accessDeniedText: {
-        fontSize: 18,
-        color: Colors.status.error,
-        textAlign: "center",
-        marginTop: 40,
-        padding: 20,
-    },
+	container: {
+		flex: 1,
+		backgroundColor: Colors.light.background,
+		paddingHorizontal: 16,
+		position: "relative",
+	},
+	weatherContainer: {
+		borderRadius: 20,
+		marginVertical: 16,
+		overflow: "hidden",
+		elevation: 4,
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 4 },
+		shadowOpacity: 0.1,
+		shadowRadius: 8,
+	},
+	statsGrid: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		marginBottom: 24,
+		gap: 16,
+	},
+	statCard: {
+		flex: 1,
+		borderRadius: 20,
+		overflow: "hidden",
+		elevation: 4,
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 4 },
+		shadowOpacity: 0.1,
+		shadowRadius: 8,
+		minHeight: 140,
+		position: "relative", // Needed for absolute positioning
+	},
+	cardBackgroundImage: {
+		width: "100%",
+		height: "100%",
+		position: "absolute",
+	},
+	cardOverlay: {
+		...StyleSheet.absoluteFillObject,
+		backgroundColor: "rgba(0,0,0,0.4)", // Dark overlay for better text contrast
+	},
+	cardContent: {
+		padding: 20,
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	iconContainer: {
+		backgroundColor: "rgba(255, 255, 255, 0.2)",
+		width: 48,
+		height: 48,
+		borderRadius: 24,
+		justifyContent: "center",
+		alignItems: "center",
+		marginBottom: 12,
+		borderWidth: 1.5,
+		borderColor: "rgba(255, 255, 255, 0.3)",
+	},
+	statNumber: {
+		fontSize: 32,
+		fontWeight: "700",
+		color: "white",
+		marginBottom: 4,
+		textShadowColor: "rgba(0, 0, 0, 0.5)",
+		textShadowOffset: { width: 1, height: 1 },
+		textShadowRadius: 3,
+	},
+	statLabel: {
+		fontSize: 16,
+		color: "white",
+		fontWeight: "500",
+		textShadowColor: "rgba(0, 0, 0, 0.5)",
+		textShadowOffset: { width: 1, height: 1 },
+		textShadowRadius: 2,
+	},
+	sellButtonContainer: {
+		position: "absolute",
+		alignItems: "center",
+		justifyContent: "center",
+		bottom: 20,
+		right: 20,
+		zIndex: 50,
+	},
+	cardBackground: {
+		position: "absolute",
+		width: responsive.Dw(30),
+		height: responsive.Dw(30),
+		resizeMode: "cover",
+	},
+	statCardPrimary: {
+		backgroundColor: Colors.light.primary,
+	},
+	statCardSecondary: {
+		backgroundColor: Colors.light.secondary,
+	},
+	section: {
+		marginBottom: 24,
+	},
+	sectionHeader: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		marginBottom: 16,
+	},
+	sectionTitle: {
+		fontSize: 20,
+		fontWeight: "700",
+		color: Colors.light.text,
+		letterSpacing: 0.5,
+	},
+	seeAllButton: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 4,
+	},
+	seeAllText: {
+		color: Colors.light.primary,
+		fontSize: 14,
+		fontWeight: "500",
+	},
+	tipCard: {
+		borderRadius: 16,
+		marginBottom: 12,
+		overflow: "hidden",
+		elevation: 2,
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+	},
+	tipGradient: {
+		padding: 16,
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+	},
+	tipHeader: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		marginBottom: 12,
+	},
+	tipContent: {
+		flex: 1,
+	},
+	categoryIndicator: {
+		padding: 6,
+		borderRadius: 8,
+	},
+	tipTitle: {
+		fontSize: 16,
+		fontWeight: "600",
+		color: Colors.light.text,
+		marginBottom: 8,
+	},
+	tipDescription: {
+		fontSize: 14,
+		color: Colors.light.text,
+		opacity: 0.8,
+		lineHeight: 20,
+	},
+	tipCategory: {
+		fontSize: 12,
+		fontWeight: "500",
+		color: Colors.light.secondary,
+	},
+	tipButton: {
+		padding: 8,
+	},
+	advisoryCard: {
+		borderRadius: 16,
+		padding: 20,
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 16,
+		marginBottom: 24,
+	},
+	advisoryTextContainer: {
+		flex: 1,
+	},
+	advisoryTitle: {
+		fontSize: 16,
+		fontWeight: "700",
+		color: "white",
+		marginBottom: 8,
+	},
+	advisoryText: {
+		fontSize: 14,
+		color: "white",
+		opacity: 0.9,
+		lineHeight: 20,
+	},
+	accessDeniedText: {
+		fontSize: 18,
+		color: Colors.status.error,
+		textAlign: "center",
+		marginTop: 40,
+		padding: 20,
+	},
 });

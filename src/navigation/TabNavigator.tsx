@@ -1,19 +1,25 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
-import { StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
-import { EvilIcons, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import {
+	StyleSheet,
+	Text,
+	TextInput,
+	useColorScheme,
+	View,
+	Platform,
+} from "react-native";
+import { EvilIcons, Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 // Import your screens
-import FarmerDashboard from '../screens/protected/home/HomeScreen';
-import ExploreScreen from '../screens/protected/explore';
-import MarketPlace from '../screens/protected/market';
-import ProfileScreen from '../screens/protected/profile';
-import SessionScreen from '../screens/protected/session';
-import { useLocationStore } from '../store/location-store';
-import useAuthStore from '../store/auth-store';
-import { Colors } from '../constants/Colors';
-import { IconSymbol } from '../components/ui/IconSymbol';
-import responsive from '../helpers/responsive';
+import FarmerDashboard from "../screens/protected/home/HomeScreen";
+import ExploreScreen from "../screens/protected/explore";
+import MarketPlace from "../screens/protected/market";
+import ProfileScreen from "../screens/protected/profile";
+import SessionScreen from "../screens/protected/session";
+import { useLocationStore } from "../store/location-store";
+import useAuthStore from "../store/auth-store";
+import { Colors } from "../constants/Colors";
+import responsive from "../helpers/responsive";
 import useCartStore from "../store/cart-store";
 import CartScreen from "../screens/protected/cart";
 import CartTabBadge from "../components/atoms/cartBadge";
@@ -33,9 +39,15 @@ export default function TabsNavigator() {
 				headerShown: false,
 				tabBarStyle: {
 					backgroundColor: Colors[colorScheme ?? "light"].background,
+					paddingBottom: Platform.OS === "ios" ? 20 : 10,
+					height: Platform.OS === "ios" ? 90 : 70,
 				},
 				tabBarActiveTintColor: Colors[colorScheme ?? "light"].primary,
 				tabBarInactiveTintColor: Colors[colorScheme ?? "light"].text,
+				tabBarLabelStyle: {
+					fontSize: 12,
+					marginBottom: Platform.OS === "ios" ? 0 : 5,
+				},
 			}}
 		>
 			<Tab.Screen
@@ -43,9 +55,9 @@ export default function TabsNavigator() {
 				component={FarmerDashboard}
 				options={{
 					tabBarIcon: ({ color, focused }) => (
-						<IconSymbol
+						<Ionicons
+							name={focused ? "home" : "home-outline"}
 							size={28}
-							name={focused ? "house.fill" : "house"}
 							color={color}
 						/>
 					),
@@ -70,9 +82,9 @@ export default function TabsNavigator() {
 					component={ExploreScreen}
 					options={{
 						tabBarIcon: ({ color, focused }) => (
-							<IconSymbol
+							<Ionicons
+								name={focused ? "compass" : "compass-outline"}
 								size={28}
-								name={focused ? "paperplane.fill" : "paperplane"}
 								color={color}
 							/>
 						),
@@ -80,7 +92,7 @@ export default function TabsNavigator() {
 						header: () => (
 							<View style={styles.exploreHeader}>
 								<Text style={styles.headerTitle}>Explore Resources</Text>
-								<View style={styles.searchContainer}>
+								{/* <View style={styles.searchContainer}>
 									<View style={styles.searchBox}>
 										<MaterialIcons
 											name="search"
@@ -95,12 +107,13 @@ export default function TabsNavigator() {
 											onChangeText={setSearchQuery}
 										/>
 									</View>
-								</View>
+								</View> */}
 							</View>
 						),
 					}}
 				/>
 			)}
+
 			{user?.type === "client" && (
 				<Tab.Screen
 					name="Cart"
@@ -108,12 +121,12 @@ export default function TabsNavigator() {
 					options={{
 						tabBarIcon: ({ color, focused }) => (
 							<View>
-								<IconSymbol
+								<Ionicons
+									name={focused ? "cart" : "cart-outline"}
 									size={28}
-									name={focused ? "cart.circle.fill" : "cart"}
 									color={color}
 								/>
-								<CartTabBadge />
+								{totalOrders > 0 && <CartTabBadge />}
 							</View>
 						),
 						headerShown: true,
@@ -161,9 +174,9 @@ export default function TabsNavigator() {
 				component={ProfileScreen}
 				options={{
 					tabBarIcon: ({ color, focused }) => (
-						<IconSymbol
+						<Ionicons
+							name={focused ? "person" : "person-outline"}
 							size={28}
-							name={focused ? "person.fill" : "person"}
 							color={color}
 						/>
 					),
@@ -173,7 +186,6 @@ export default function TabsNavigator() {
 	);
 }
 
-// Reuse your existing styles
 const styles = StyleSheet.create({
   header: {
     paddingBottom: 10,
