@@ -22,7 +22,6 @@ import { Colors } from "../constants/Colors";
 import responsive from "../helpers/responsive";
 import useCartStore from "../store/cart-store";
 import CartScreen from "../screens/protected/cart";
-import CartTabBadge from "../components/atoms/cartBadge";
 
 const Tab = createBottomTabNavigator();
 
@@ -39,14 +38,20 @@ export default function TabsNavigator() {
 				headerShown: false,
 				tabBarStyle: {
 					backgroundColor: Colors[colorScheme ?? "light"].background,
-					paddingBottom: Platform.OS === "ios" ? 20 : 10,
-					height: Platform.OS === "ios" ? 90 : 70,
+					paddingBottom: Platform.OS === "ios" ? 20 : 5,
+					height: Platform.OS === "ios" ? 90 : 60,
+					borderTopWidth: 0,
+					elevation: 8,
 				},
 				tabBarActiveTintColor: Colors[colorScheme ?? "light"].primary,
 				tabBarInactiveTintColor: Colors[colorScheme ?? "light"].text,
 				tabBarLabelStyle: {
 					fontSize: 12,
-					marginBottom: Platform.OS === "ios" ? 0 : 5,
+					marginBottom: 0,
+					paddingBottom: Platform.OS === "ios" ? 0 : 2,
+				},
+				tabBarIconStyle: {
+					marginTop: Platform.OS === "ios" ? 0 : 4,
 				},
 			}}
 		>
@@ -57,13 +62,18 @@ export default function TabsNavigator() {
 					tabBarIcon: ({ color, focused }) => (
 						<Ionicons
 							name={focused ? "home" : "home-outline"}
-							size={28}
+							size={Platform.OS === "ios" ? 28 : 24}
 							color={color}
 						/>
 					),
 					headerShown: true,
 					header: () => (
-						<View style={styles.header}>
+						<View
+							style={[
+								styles.header,
+								Platform.OS === "android" && { marginTop: 10 },
+							]}
+						>
 							<Text style={styles.welcomeText}>Welcome, {user?.userName}</Text>
 							{user?.location && (
 								<View style={styles.locationText}>
@@ -84,30 +94,19 @@ export default function TabsNavigator() {
 						tabBarIcon: ({ color, focused }) => (
 							<Ionicons
 								name={focused ? "compass" : "compass-outline"}
-								size={28}
+								size={Platform.OS === "ios" ? 28 : 24}
 								color={color}
 							/>
 						),
 						headerShown: true,
 						header: () => (
-							<View style={styles.exploreHeader}>
+							<View
+								style={[
+									styles.exploreHeader,
+									Platform.OS === "android" && { marginTop: 10 },
+								]}
+							>
 								<Text style={styles.headerTitle}>Explore Resources</Text>
-								{/* <View style={styles.searchContainer}>
-									<View style={styles.searchBox}>
-										<MaterialIcons
-											name="search"
-											size={20}
-											color={Colors.light.text}
-										/>
-										<TextInput
-											style={styles.searchText}
-											placeholder="Search resources..."
-											placeholderTextColor={Colors.light.text}
-											value={searchQuery}
-											onChangeText={setSearchQuery}
-										/>
-									</View>
-								</View> */}
 							</View>
 						),
 					}}
@@ -120,18 +119,32 @@ export default function TabsNavigator() {
 					component={CartScreen}
 					options={{
 						tabBarIcon: ({ color, focused }) => (
-							<View>
+							<View style={{ position: "relative" }}>
 								<Ionicons
 									name={focused ? "cart" : "cart-outline"}
-									size={28}
+									size={Platform.OS === "ios" ? 28 : 24}
 									color={color}
 								/>
-								{totalOrders > 0 && <CartTabBadge />}
+								{totalOrders > 0 && (
+									<View
+										style={[
+											styles.badge,
+											Platform.OS === "android" && { top: -5, right: -10 },
+										]}
+									>
+										<Text style={styles.badgeText}>{totalOrders}</Text>
+									</View>
+								)}
 							</View>
 						),
 						headerShown: true,
 						header: () => (
-							<View style={styles.exploreHeader}>
+							<View
+								style={[
+									styles.exploreHeader,
+									Platform.OS === "android" && { marginTop: 10 },
+								]}
+							>
 								<Text style={styles.headerTitle}>Market</Text>
 								<View style={styles.searchContainer}>
 									<View style={styles.searchBox}>
@@ -162,7 +175,7 @@ export default function TabsNavigator() {
 					tabBarIcon: ({ color, focused }) => (
 						<Ionicons
 							name={focused ? "chatbubbles" : "chatbubbles-outline"}
-							size={28}
+							size={Platform.OS === "ios" ? 28 : 24}
 							color={color}
 						/>
 					),
@@ -176,7 +189,7 @@ export default function TabsNavigator() {
 					tabBarIcon: ({ color, focused }) => (
 						<Ionicons
 							name={focused ? "person" : "person-outline"}
-							size={28}
+							size={Platform.OS === "ios" ? 28 : 24}
 							color={color}
 						/>
 					),
@@ -187,52 +200,68 @@ export default function TabsNavigator() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingBottom: 10,
-    marginTop: responsive.Dh(5),
-    paddingHorizontal: 16
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.light.text,
-    marginBottom: 4,
-  },
-  locationText: {
-    fontSize: 16,
-    color: Colors.light.text,
-    opacity: 0.8,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  exploreHeader: {
-    marginTop: responsive.Dh(5),
-    paddingHorizontal: 16
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.light.text,
-    marginBottom: 16,
-  },
-  searchContainer: {
-    marginBottom: 16,
-  },
-  searchBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.light.surface,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: 'lightgrey'
-  },
-  searchText: {
-    flex: 1,
-    marginLeft: 8,
-    color: Colors.light.text,
-    fontSize: 16,
-  },
+	header: {
+		paddingBottom: Platform.OS === "ios" ? 10 : 5,
+		marginTop: Platform.OS === "ios" ? responsive.Dh(5) : 10,
+		paddingHorizontal: 16,
+	},
+	welcomeText: {
+		fontSize: 24,
+		fontWeight: "bold",
+		color: Colors.light.text,
+		marginBottom: 4,
+	},
+	locationText: {
+		fontSize: 16,
+		color: Colors.light.text,
+		opacity: 0.8,
+		flexDirection: "row",
+		alignItems: "center",
+	},
+	exploreHeader: {
+		marginTop: Platform.OS === "ios" ? responsive.Dh(5) : 10,
+		paddingHorizontal: 16,
+	},
+	headerTitle: {
+		fontSize: 24,
+		fontWeight: "bold",
+		color: Colors.light.text,
+		marginBottom: 16,
+	},
+	searchContainer: {
+		marginBottom: 16,
+	},
+	searchBox: {
+		flexDirection: "row",
+		alignItems: "center",
+		backgroundColor: Colors.light.surface,
+		borderRadius: 12,
+		paddingHorizontal: 16,
+		paddingVertical: 12,
+		elevation: 2,
+		borderWidth: 1,
+		borderColor: "lightgrey",
+	},
+	searchText: {
+		flex: 1,
+		marginLeft: 8,
+		color: Colors.light.text,
+		fontSize: 16,
+	},
+	badge: {
+		position: "absolute",
+		top: -3,
+		right: -6,
+		backgroundColor: "red",
+		borderRadius: 10,
+		width: 18,
+		height: 18,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	badgeText: {
+		color: "white",
+		fontSize: 10,
+		fontWeight: "bold",
+	},
 });

@@ -6,6 +6,7 @@ import {
 	Image,
 	ActivityIndicator,
 	FlatList,
+	TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +17,8 @@ import { Colors } from "../../../../constants/Colors";
 import { IconSymbol } from "../../../../components/ui/IconSymbol";
 import ProductCard from "../../../../components/cards/productCard";
 import responsive from "../../../../helpers/responsive";
+import useAuthStore from "../../../../store/auth-store";
+import Button from "../../../../components/buttons/basic-button";
 
 interface Order {
 	_id: string;
@@ -64,10 +67,10 @@ interface Props {
 
 const FarmerDetailsScreen = ({ route }: Props) => {
 	const { id } = route.params;
-	const navigation = useNavigation();
+	const navigation = useNavigation() as any;
 	const [currentFarmer, setCurrentFarmer] = useState<Farmer | null>(null);
+	const { user } = useAuthStore((state) => state);
 
-	// Fetch specific farmer with orders and products
 	const { data: farmerDetails, isLoading: isLoadingFarmerDetails } =
 		useQuery<Farmer>({
 			queryKey: ["farmerDetails", id],
@@ -79,6 +82,27 @@ const FarmerDetailsScreen = ({ route }: Props) => {
 			},
 			enabled: !!id,
 		});
+
+	const handleStartChat = async () => {
+		try {
+			const response = await axios.post(`${baseUrl}/api/chats/${user?.id}`, {
+				receiverId: farmerDetails?._id,
+			});
+
+			if (response.status === 200 || response.status !== 201)
+				throw new Error("Failed to create chat");
+
+			const chat = await response.data;
+
+			navigation.navigate("dynamicNavigator", {
+				screen: "chat-screen",
+				params: { chatId: chat?._id, receiverId: farmerDetails?._id },
+			});
+		} catch (error) {
+			console.error("Error creating chat:", error);
+			// Show error message to user
+		}
+	};
 
 	useEffect(() => {
 		if (farmerDetails) {
@@ -116,7 +140,6 @@ const FarmerDetailsScreen = ({ route }: Props) => {
 			style={styles.container}
 			contentContainerStyle={styles.contentContainer}
 		>
-			{/* Profile Section */}
 			<View style={styles.profileSection}>
 				{currentFarmer.profileImage ? (
 					<Image
@@ -188,6 +211,11 @@ const FarmerDetailsScreen = ({ route }: Props) => {
 						</Text>
 					</View>
 				)}
+				<View style={{ width: "100%" }}>
+					<Button onPress={handleStartChat}>
+						<Text>Chat</Text>
+					</Button>
+				</View>
 			</View>
 
 			{/* Products Section */}

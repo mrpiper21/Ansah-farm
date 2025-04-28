@@ -1,16 +1,16 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
-import ResourceDetailScreen from '../screens/protected/home/ResourceDetails';
-import ChatScreen from '../screens/protected/home/Chat';
-import OrderDetailsScreen from '../screens/protected/home/OrderDetails';
-import OrderScreen from '../screens/protected/home/OrderScreen';
-import { StackNavigationProp } from '@react-navigation/stack';
-import FarmerProduce from '../screens/protected/home/FarmProduceScreen';
-import SellScreen from '../screens/protected/home/SellScreen';
+import ResourceDetailScreen from "../screens/protected/home/ResourceDetails";
+import OrderDetailsScreen from "../screens/protected/home/OrderDetails";
+import OrderScreen from "../screens/protected/home/OrderScreen";
+import { StackNavigationProp } from "@react-navigation/stack";
+import FarmerProduce from "../screens/protected/home/FarmProduceScreen";
+import SellScreen from "../screens/protected/home/SellScreen";
 import FarmerOrderScreen from "../screens/protected/home/farmer/FarmerOrderScreen";
 import FarmerOrderDetailsScreen from "../screens/protected/home/farmer/FarmerOrderDetailsScreen";
 import FarmerDetailsScreen from "../screens/protected/home/client/FarmerDetailScreen";
+import ChatScreen from "../screens/protected/session/ChatScreen";
 
 export type DynamicStackParamList = {
 	"resource-details": { id: string };
@@ -23,6 +23,7 @@ export type DynamicStackParamList = {
 	"farmer-orders": undefined;
 	"farmerOrder-details": { id: string };
 	"farmers-details": { id: string };
+	"chat-screen": { chatId: string };
 };
 export type DynamicStackScreenProps<T extends keyof DynamicStackParamList> =
 	StackScreenProps<DynamicStackParamList, T>;
@@ -37,7 +38,7 @@ const DynamicNavigator = () => {
 				initialParams={{ id: "" }}
 				component={ResourceDetailScreen as React.ComponentType<any>}
 			/>
-			<Stack.Screen name="chat" component={ChatScreen} />
+			{/* <Stack.Screen name="chat" component={ChatScreen} /> */}
 			<Stack.Screen
 				name="order-details"
 				component={OrderDetailsScreen as React.ComponentType<any>}
@@ -54,6 +55,10 @@ const DynamicNavigator = () => {
 			<Stack.Screen
 				name="farmers-details"
 				component={FarmerDetailsScreen as React.ComponentType<any>}
+			/>
+			<Stack.Screen
+				name="chat-screen"
+				component={ChatScreen as React.ComponentType<any>}
 			/>
 		</Stack.Navigator>
 	);

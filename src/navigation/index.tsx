@@ -5,16 +5,17 @@ import TabsNavigator from './TabNavigator';
 import LoginScreen from '../screens/auth/login';
 import useAuthStore from '../store/auth-store';
 import DynamicNavigator from './DynamicNavigator';
+import { ChatProvider } from "../context/chatContext";
 
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
-  const {user} = useAuthStore((state) => state)
-  return (
+	const { user } = useAuthStore((state) => state);
+	return (
 		<NavigationContainer>
-			<Stack.Navigator>
-				{user ? (
-					<>
+			{user ? (
+				<ChatProvider>
+					<Stack.Navigator>
 						<Stack.Screen
 							name="Tabs"
 							component={TabsNavigator}
@@ -25,17 +26,19 @@ const AppNavigator = () => {
 							component={DynamicNavigator}
 							options={{ headerShown: false }}
 						/>
-					</>
-				) : (
+					</Stack.Navigator>
+				</ChatProvider>
+			) : (
+				<Stack.Navigator>
 					<Stack.Screen
 						name="AuthNavigator"
 						component={AuthNavigator}
 						options={{ headerShown: false }}
 					/>
-				)}
-			</Stack.Navigator>
+				</Stack.Navigator>
+			)}
 		</NavigationContainer>
 	);
-}
+};
 
 export default AppNavigator
