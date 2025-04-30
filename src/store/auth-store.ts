@@ -41,7 +41,7 @@ const useAuthStore = create(
 			error: null,
 			login: async (email: string, password: string) => {
 				try {
-					set({ isLoading: true, error: null });
+					// set({ isLoading: true, error: null });
 
 					const response = await axios.post(`${baseUrl}/api/users/login`, {
 						email,
@@ -65,7 +65,7 @@ const useAuthStore = create(
 								location: user.location,
 							},
 							isAuthenticated: true,
-							isLoading: false,
+							// isLoading: false,
 						});
 
 						return user;

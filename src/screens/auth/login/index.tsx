@@ -32,7 +32,8 @@ const LoginScreen: React.FC = () => {
 	const [isFarmer, setIsFarmer] = useState(false);
 	const bottomSheetRef = useRef<BottomSheet>(null);
 	const [form, setForm] = useState({ email: "", password: "" });
-	const { login, isLoading, error } = useAuthStore();
+	const { login, error } = useAuthStore();
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const snapPoints = ["60%", "80%"];
 	const navigation = useNavigation() as any;
 
@@ -61,15 +62,19 @@ const LoginScreen: React.FC = () => {
 	}, []);
 
 	const handleLogin = async () => {
+		setIsLoading(true);
 		try {
 			await login(form.email, form.password);
 			Alert.alert("Login successful");
+			setIsLoading(false);
 			if (error) {
 				Alert.alert(error || "Login failed");
+				setIsLoading(false);
 				return;
 			}
 		} catch (error: any) {
 			Alert.alert(error.message || "Login failed");
+			setIsLoading(false);
 		}
 	};
 
