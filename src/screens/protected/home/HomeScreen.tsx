@@ -152,7 +152,7 @@ export default function FarmerDashboard() {
 					<View style={styles.sectionHeader}>
 						<Text style={styles.sectionTitle}>Latest Guidance</Text>
 						<TouchableOpacity
-							// onPress={() => router.push("/(tabs)/explore")}
+							onPress={() => navigation.navigate("Explore")}
 							style={styles.seeAllButton}
 						>
 							<Text style={styles.seeAllText}>View All</Text>

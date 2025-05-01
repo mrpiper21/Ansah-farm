@@ -7,6 +7,7 @@ import {
 	ActivityIndicator,
 	FlatList,
 	TouchableOpacity,
+	Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -85,22 +86,39 @@ const FarmerDetailsScreen = ({ route }: Props) => {
 
 	const handleStartChat = async () => {
 		try {
-			const response = await axios.post(`${baseUrl}/api/chats/${user?.id}`, {
-				receiverId: farmerDetails?._id,
+			if (!user?.id || !farmerDetails?._id) {
+				throw new Error("Missing user or farmer details");
+			}
+
+			const response = await axios.post(`${baseUrl}/api/chats/${user.id}`, {
+				receiverId: farmerDetails._id,
 			});
 
-			if (response.status === 200 || response.status !== 201)
+			// Check for successful response (200 or 201)
+			if (response.status !== 200 && response.status !== 201) {
 				throw new Error("Failed to create chat");
+			}
 
-			const chat = await response.data;
+			const chat = response.data;
+
+			// Verify the chat object has required properties
+			if (!chat?._id || !chat?.participants) {
+				throw new Error("Invalid chat data received");
+			}
 
 			navigation.navigate("dynamicNavigator", {
 				screen: "chat-screen",
-				params: { chatId: chat?._id, receiverId: farmerDetails?._id },
+				params: {
+					chatId: chat._id,
+					receiverId: farmerDetails._id,
+				},
 			});
 		} catch (error) {
 			console.error("Error creating chat:", error);
-			// Show error message to user
+			Alert.alert(
+				"Chat Error",
+				error instanceof Error ? error.message : "Failed to start chat"
+			);
 		}
 	};
 
@@ -304,6 +322,8 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 		margin: 16,
 		marginTop: responsive.Dw(12),
+		borderWidth: 0.5,
+		borderColor: Colors.light.primary,
 	},
 	avatar: { width: 120, height: 120, borderRadius: 60, marginBottom: 16 },
 	avatarPlaceholder: {

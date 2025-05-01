@@ -37,7 +37,7 @@ export default function TabsNavigator() {
 			screenOptions={{
 				headerShown: false,
 				tabBarStyle: {
-					backgroundColor: Colors[colorScheme ?? "light"].background,
+					backgroundColor: Colors[colorScheme ?? "light"].surface,
 					paddingBottom: Platform.OS === "ios" ? 20 : 5,
 					height: Platform.OS === "ios" ? 90 : 60,
 					borderTopWidth: 0,
@@ -169,7 +169,7 @@ export default function TabsNavigator() {
 			)}
 
 			<Tab.Screen
-				name="Sessions"
+				name="Chat"
 				component={SessionScreen}
 				options={{
 					tabBarIcon: ({ color, focused }) => (

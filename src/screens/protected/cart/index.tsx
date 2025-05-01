@@ -1,105 +1,105 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native';
-import { Colors } from '../../../constants/Colors';
-import { IconSymbol } from '../../../components/ui/IconSymbol';
-import useCartStore, { Product } from '../../../store/cart-store';
-import { baseUrl } from '../../../config/api';
-import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
-import useAuthStore from '../../../store/auth-store';
-
+import { Colors } from "../../../constants/Colors";
+import useCartStore, { Product } from "../../../store/cart-store";
+import { baseUrl } from "../../../config/api";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+import useAuthStore from "../../../store/auth-store";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { AntDesign } from "@expo/vector-icons";
+import { IconSymbol } from "../../../components/ui/IconSymbol";
 const CartScreen = () => {
-  const {
-    items,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-    getTotalItems,
-    getTotalPrice,
-    getItemQuantity,
-  } = useCartStore();
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const navigation = useNavigation()  as any
-  const {user} = useAuthStore((state) => state)
+	const {
+		items,
+		addToCart,
+		removeFromCart,
+		updateQuantity,
+		clearCart,
+		getTotalItems,
+		getTotalPrice,
+		getItemQuantity,
+	} = useCartStore();
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const navigation = useNavigation() as any;
+	const { user } = useAuthStore((state) => state);
 
-  // Group items by product ID
-  const groupedItems = items.reduce((acc: Record<string, any>, item) => {
-    if (!acc[item.product._id]) {
-      acc[item.product._id] = {
-        product: item.product,
-        quantity: 0,
-      };
-    }
-    acc[item.product._id].quantity += item.quantity;
-    return acc;
-  }, {});
+	// Group items by product ID
+	const groupedItems = items.reduce((acc: Record<string, any>, item) => {
+		if (!acc[item.product._id]) {
+			acc[item.product._id] = {
+				product: item.product,
+				quantity: 0,
+			};
+		}
+		acc[item.product._id].quantity += item.quantity;
+		return acc;
+	}, {});
 
-  const groupedItemsArray = Object.values(groupedItems);
+	const groupedItemsArray = Object.values(groupedItems);
 
-  const handleIncreaseQuantity = (product: Product) => {
-    addToCart(product);
-  };
+	const handleIncreaseQuantity = (product: Product) => {
+		addToCart(product);
+	};
 
-  const handleDecreaseQuantity = (product: Product) => {
-    const currentQuantity = getItemQuantity(product._id);
-    if (currentQuantity > 1) {
-      updateQuantity(product._id, currentQuantity - 1);
-    } else {
-      removeFromCart(product._id);
-    }
-  };
+	const handleDecreaseQuantity = (product: Product) => {
+		const currentQuantity = getItemQuantity(product._id);
+		if (currentQuantity > 1) {
+			updateQuantity(product._id, currentQuantity - 1);
+		} else {
+			removeFromCart(product._id);
+		}
+	};
 
-  const handlePurchase = async () => {
-    const payload = {
-        buyer: user?.id,
-        items
-    };
-    console.log("payload --------------", payload);
-    Alert.alert(
-        "Confirm Purchase",
-        `Are you sure you want to proceed?`,
-        [
-            {
-                text: "Cancel",
-                style: "cancel",
-            },
-            {
-                text: "Confirm",
-                onPress: async () => {
-                    try {
-                        setIsLoading(true);
+	const handlePurchase = async () => {
+		const payload = {
+			buyer: user?.id,
+			items,
+		};
+		console.log("payload --------------", payload);
+		Alert.alert(
+			"Confirm Purchase",
+			`Are you sure you want to proceed?`,
+			[
+				{
+					text: "Cancel",
+					style: "cancel",
+				},
+				{
+					text: "Confirm",
+					onPress: async () => {
+						try {
+							setIsLoading(true);
 
-                        const response = await axios.post(
-                            `${baseUrl}/api/orders/create`,
-                            payload
-                        );
+							const response = await axios.post(
+								`${baseUrl}/api/orders/create`,
+								payload
+							);
 
-                        if (response.status === 201) {
-                           
-                            Alert.alert("Success")
-                        } else {
-                            Alert.alert(
-                                "Error",
-                                response?.data?.error || "Failed to create order"
-                            );
-                        }
-                    } catch (error: any) {
-                        Alert.alert(
-                            "Error",
-                            error.response?.data?.message || "Failed to connect to server"
-                        );
-                    } finally {
-                        setIsLoading(false);
-                    }
-                },
-            },
-        ],
-        { cancelable: true }
-    );
-};
+							if (response.status === 201) {
+								Alert.alert("Success");
+							} else {
+								Alert.alert(
+									"Error",
+									response?.data?.error || "Failed to create order"
+								);
+							}
+						} catch (error: any) {
+							Alert.alert(
+								"Error",
+								error.response?.data?.message || "Failed to connect to server"
+							);
+						} finally {
+							setIsLoading(false);
+						}
+					},
+				},
+			],
+			{ cancelable: true }
+		);
+	};
 
-  const renderCartItem = ({ item }: { item: any }) => (
+	const renderCartItem = ({ item }: { item: any }) => (
 		<View style={styles.cartItem}>
 			<Image
 				source={{
@@ -119,7 +119,8 @@ const CartScreen = () => {
 						onPress={() => handleDecreaseQuantity(item.product)}
 						style={styles.quantityButton}
 					>
-						<IconSymbol name="minus" size={20} color={Colors.light.text} />
+						{/* <IconSymbol name="minus" size={20} color={Colors.light.text} /> */}
+						<FontAwesome6 name="minus" size={24} color={Colors.light.text} />
 					</TouchableOpacity>
 
 					<Text style={styles.quantityText}>{item.quantity}</Text>
@@ -128,7 +129,7 @@ const CartScreen = () => {
 						onPress={() => handleIncreaseQuantity(item.product)}
 						style={styles.quantityButton}
 					>
-						<IconSymbol name="plus" size={20} color={Colors.light.text} />
+						<AntDesign name="plus" size={24} color="black" />
 					</TouchableOpacity>
 
 					<TouchableOpacity
@@ -142,59 +143,79 @@ const CartScreen = () => {
 		</View>
 	);
 
-  return (
-    <View style={styles.container}>
-      {items.length === 0 ? (
-        <View style={styles.emptyCartContainer}>
-          <IconSymbol name="minus.circle" size={60} color={Colors.light.secondary} />
-          <Text style={styles.emptyCartText}>Your cart is empty</Text>
-          <Text style={styles.emptyCartSubText}>Browse products and add items to get started</Text>
-        </View>
-      ) : (
-        <>
-          <FlatList
-            data={groupedItemsArray}
-            renderItem={renderCartItem}
-            keyExtractor={(item) => item.product._id}
-            contentContainerStyle={styles.listContent}
-          />
-          
-          <View style={styles.summaryContainer}>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Total Items:</Text>
-              <Text style={styles.summaryValue}>{getTotalItems()}</Text>
-            </View>
-            
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Subtotal:</Text>
-              <Text style={styles.summaryValue}>GHS{getTotalPrice().toFixed(2)}</Text>
-            </View>
-            
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Delivery:</Text>
-              <Text style={styles.summaryValue}>GHS0.00</Text>
-            </View>
-            
-            <View style={[styles.summaryRow, styles.totalRow]}>
-              <Text style={styles.totalLabel}>Total:</Text>
-              <Text style={styles.totalValue}>GHS{getTotalPrice().toFixed(2)}</Text>
-            </View>
-            
-            <TouchableOpacity disabled={isLoading} onPress={handlePurchase} style={styles.checkoutButton}>
-             {isLoading ? <ActivityIndicator color={Colors.light.accent} /> :  <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>}
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              onPress={clearCart}
-              style={styles.clearCartButton}
-            >
-              <Text style={styles.clearCartButtonText}>Clear Cart</Text>
-            </TouchableOpacity>
-          </View>
-        </>
-      )}
-    </View>
-  );
+	return (
+		<View style={styles.container}>
+			{items.length === 0 ? (
+				<View style={styles.emptyCartContainer}>
+					<IconSymbol
+						name="minus.circle"
+						size={60}
+						color={Colors.light.secondary}
+					/>
+					<Text style={styles.emptyCartText}>Your cart is empty</Text>
+					<Text style={styles.emptyCartSubText}>
+						Browse products and add items to get started
+					</Text>
+				</View>
+			) : (
+				<>
+					<FlatList
+						data={groupedItemsArray}
+						renderItem={renderCartItem}
+						keyExtractor={(item) => item.product._id}
+						contentContainerStyle={styles.listContent}
+					/>
+
+					<View style={styles.summaryContainer}>
+						<View style={styles.summaryRow}>
+							<Text style={styles.summaryLabel}>Total Items:</Text>
+							<Text style={styles.summaryValue}>{getTotalItems()}</Text>
+						</View>
+
+						<View style={styles.summaryRow}>
+							<Text style={styles.summaryLabel}>Subtotal:</Text>
+							<Text style={styles.summaryValue}>
+								GHS{getTotalPrice().toFixed(2)}
+							</Text>
+						</View>
+
+						<View style={styles.summaryRow}>
+							<Text style={styles.summaryLabel}>Delivery:</Text>
+							<Text style={styles.summaryValue}>GHS0.00</Text>
+						</View>
+
+						<View style={[styles.summaryRow, styles.totalRow]}>
+							<Text style={styles.totalLabel}>Total:</Text>
+							<Text style={styles.totalValue}>
+								GHS{getTotalPrice().toFixed(2)}
+							</Text>
+						</View>
+
+						<TouchableOpacity
+							disabled={isLoading}
+							onPress={handlePurchase}
+							style={styles.checkoutButton}
+						>
+							{isLoading ? (
+								<ActivityIndicator color={Colors.light.accent} />
+							) : (
+								<Text style={styles.checkoutButtonText}>
+									Proceed to Checkout
+								</Text>
+							)}
+						</TouchableOpacity>
+
+						<TouchableOpacity
+							onPress={clearCart}
+							style={styles.clearCartButton}
+						>
+							<Text style={styles.clearCartButtonText}>Clear Cart</Text>
+						</TouchableOpacity>
+					</View>
+				</>
+			)}
+		</View>
+	);
 };
 
 const styles = StyleSheet.create({
